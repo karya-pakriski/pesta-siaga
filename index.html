@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pesta Siaga SD Negeri 1 Godegan</title>
+    <style>
+        :root {
+            --emerald-900: #064e3b;
+            --emerald-700: #047857;
+            --emerald-500: #10b981;
+            --emerald-100: #d1fae5;
+            --emerald-50: #ecfdf5;
+            --bg-color: #f3f4f6;
+            --text-dark: #1f2937;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            user-select: none; /* Anti-copy */
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile App Container */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+            min-height: 100vh;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Headers */
+        h1, h2, h3 { color: var(--emerald-900); }
+        .header-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+        .slogan {
+            text-align: center;
+            font-size: 14px;
+            color: var(--emerald-700);
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: var(--emerald-100);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        /* Login Screen */
+        .login-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            text-align: center;
+        }
+        .logo-pramuka {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        select.input-name {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid var(--emerald-500);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            background-color: var(--emerald-50);
+            color: var(--text-dark);
+            font-weight: bold;
+            outline: none;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--emerald-600);
+            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+            transition: transform 0.1s;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Bento Grid Layouts */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .bento-item {
+            background-color: var(--emerald-50);
+            border: 2px solid var(--emerald-100);
+            border-radius: var(--radius-xl);
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .bento-item.large {
+            grid-column: span 2;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
+            color: white;
+            border: none;
+            box-shadow: 0 8px 15px rgba(4, 120, 87, 0.2);
+        }
+        .bento-item.large .bento-title { color: white; font-size: 20px; }
+        .bento-item.large .bento-icon { font-size: 40px; color: white; }
+        
+        .bento-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--emerald-700);
+        }
+        .bento-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--emerald-900);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-back {
+            background: var(--emerald-100);
+            border: none;
+            color: var(--emerald-900);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        .nav-title { font-size: 18px; font-weight: bold; color: var(--emerald-900); }
+
+        /* Quiz Arena */
+        .question-box {
+            background: white;
+            border: 3px solid var(--emerald-500);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .option-btn {
+            background: var(--emerald-50);
+            border: 2px solid var(--emerald-100);
+            padding: 15px;
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--emerald-900);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn:active { background: var(--emerald-100); transform: scale(0.95); }
+
+        /* Feedback Overlays */
+        .feedback-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .feedback-overlay.show { opacity: 1; pointer-events: all; }
+        .feedback-icon { font-size: 100px; }
+        .feedback-correct { color: var(--success); animation: bounce 0.5s; }
+        .feedback-wrong { color: var(--danger); animation: shake 0.5s; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <div class="app-container" id="app">
+    
+    <div id="screen-login" class="screen active">
+        <div class="login-wrapper">
+            <div class="logo-pramuka">⚜️</div>
+            <div class="header-title">PESTA SIAGA<br>SD NEGERI 1 GODEGAN</div>
+            <div class="slogan">TERUS BELAJAR PASTI KITA BISA JUARA!</div>
+            
+            <select id="namaPeserta" class="input-name">
+                <option value="" disabled selected>-- Pilih Nama Kamu --</option>
+                <optgroup label="Barung Putra">
+                    <option value="Zaffa">Zaffa</option>
+                    <option value="Azzam">Azzam</option>
+                    <option value="Naja">Naja</option>
+                    <option value="Risqi">Risqi</option>
+                    <option value="Reyvan">Reyvan</option>
+                    <option value="Rakha">Rakha</option>
+                </optgroup>
+                <optgroup label="Barung Putri">
+                    <option value="Alesha">Alesha</option>
+                    <option value="Anindya">Anindya</option>
+                    <option value="Adinda">Adinda</option>
+                    <option value="Nafisah">Nafisah</option>
+                    <option value="Nanda">Nanda</option>
+                    <option value="Shafeea">Shafeea</option>
+                </optgroup>
+            </select>
+
+            <button class="btn-primary" onclick="masukAplikasi()">Mulai Bermain 🚀</button>
+        </div>
+    </div>
+
+    <div id="screen-menu" class="screen">
+        <div class="header-title" style="text-align: left; margin-top: 10px;">Halo, <span id="displayNama">Siswa</span>! 👋</div>
+        <div class="slogan" style="text-align: left;">SD Negeri 1 Godegan Bisa!</div>
+
+        <div class="bento-grid">
+            <div class="bento-item large" onclick="bukaLayar('screen-materi')">
+                <div class="bento-icon">📖</div>
+                <div class="bento-title">Materi Belajar</div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Baca Flashcard Disini</div>
+            </div>
+            
+            <div class="bento-item large" onclick="bukaLayar('screen-kategori-uji')" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="bento-icon">🎯</div>
+                <div class="bento-title">Uji Diri</div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Mulai Simulasi Kuis</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-kategori-uji" class="screen">
+        <div class="top-nav">
+            <button class="btn-back" onclick="bukaLayar('screen-menu')">←</button>
+            <div class="nav-title">Pilih Tantangan</div>
+        </div>
+        <div class="bento-grid">
+            <div class="bento-item" onclick="mulaiKuis('Pahlawan')">
+                <div class="bento-icon">🦸</div>
+                <div class="bento-title">Tebak Pahlawan</div>
+            </div>
+            <div class="bento-item" onclick="mulaiKuis('Sumbu Filosofi')">
+                <div class="bento-icon">🏛️</div>
+                <div class="bento-title">Sumbu Filosofi</div>
+            </div>
+            <div class="bento-item" onclick="mulaiKuis('Unggah-ungguh')">
+                <div class="bento-icon">🙏</div>
+                <div class="bento-title">Unggah-ungguh</div>
+            </div>
+            <div class="bento-item" onclick="mulaiKuis('Toleransi')">
+                <div class="bento-icon">🤝</div>
+                <div class="bento-title">Toleransi</div>
+            </div>
+            <div class="bento-item large" onclick="mulaiKuis('Uji Semua')" style="background: var(--emerald-900); color: white;">
+                <div class="bento-icon">🏆</div>
+                <div class="bento-title" style="color: white;">UJI SEMUA MATERI</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-kuis" class="screen">
+        <div class="top-nav">
+            <button class="btn-back" onclick="keluarKuis()">✖</button>
+            <div class="nav-title" id="judulKuis">Tantangan</div>
+            <div style="margin-left: auto; font-weight: bold; color: var(--emerald-700);">Skor: <span id="skorKuis">0</span></div>
+        </div>
+        
+        <div style="width: 100%; height: 8px; background: var(--emerald-100); border-radius: 4px; margin-bottom: 20px;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: var(--emerald-500); border-radius: 4px; transition: width 0.3s;"></div>
+        </div>
+
+        <div class="question-box" id="teksSoal">Memuat soal...</div>
+        
+        <div class="options-grid" id="wadahOpsi">
+            </div>
+    </div>
+
+    <div id="feedback-overlay" class="feedback-overlay">
+        <div id="feedback-icon" class="feedback-icon"></div>
+    </div>
+
+</div>
+
+<script>
+    // Konfigurasi State Aplikasi
+    let state = {
+        peserta: '',
+        kategoriAktif: '',
+        skor: 0,
+        indeksSoal: 0,
+        soalTersedia: []
+    };
+
+    // Placeholder Data Soal (Akan ditimpa oleh hasil fetch GAS nanti)
+    // Format distrukturkan agar mesin pengacak berfungsi optimal
+    const bankSoalLokal = [
+        { kategori: "Sumbu Filosofi", soal: "Bangunan bersejarah yang terletak paling selatan pada Sumbu Filosofi adalah?", opsi: ["Panggung Krapyak", "Tugu Pal Putih", "Kraton Jogja", "Gunung Merapi"], jawaban: "Panggung Krapyak" },
+        { kategori: "Pahlawan", soal: "Pahlawan asal DIY yang dijuluki Bapak Pendidikan Nasional adalah?", opsi: ["Ki Hajar Dewantara", "Pangeran Diponegoro", "KH Ahmad Dahlan", "Sri Sultan HB IX"], jawaban: "Ki Hajar Dewantara" },
+        { kategori: "Unggah-ungguh", soal: "Saat berjalan melewati bapak ibu guru, kita sebaiknya mengucapkan?", opsi: ["Nderek Langkung", "Nyuwun Sewu", "Matur Nuwun", "Mangga"], jawaban: "Nderek Langkung" },
+        { kategori: "Toleransi", soal: "Saat teman sebarungmu sedang sakit, apa yang harus kamu ucapkan?", opsi: ["Semoga lekas sembuh", "Selamat ya", "Biarin saja", "Terima kasih"], jawaban: "Semoga lekas sembuh" }
+    ];
+
+    // Fungsi Navigasi Dasar
+    function bukaLayar(idLayar) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(idLayar).classList.add('active');
+    }
+
+    function masukAplikasi() {
+        const nama = document.getElementById('namaPeserta').value;
+        if (!nama) {
+            alert("Pilih namamu dulu ya!");
+            return;
+        }
+        state.peserta = nama;
+        document.getElementById('displayNama').innerText = nama;
+        bukaLayar('screen-menu');
+    }
+
+    // Fungsi Utama Mesin Kuis
+    function mulaiKuis(kategori) {
+        // Minta akses fullscreen saat ujian dimulai untuk mengunci fokus layar
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch((err) => console.log(err));
+        }
+
+        state.kategoriAktif = kategori;
+        state.skor = 0;
+        state.indeksSoal = 0;
+        document.getElementById('judulKuis').innerText = kategori;
+        document.getElementById('skorKuis').innerText = state.skor;
+
+        // Filter soal berdasarkan pilihan (atau ambil semua jika mode Uji Semua)
+        if(kategori === 'Uji Semua') {
+            state.soalTersedia = [...bankSoalLokal];
+        } else {
+            state.soalTersedia = bankSoalLokal.filter(s => s.kategori === kategori);
+        }
+
+        if(state.soalTersedia.length === 0) {
+            alert("Maaf, soal untuk kategori ini sedang disiapkan panitia.");
+            return;
+        }
+
+        bukaLayar('screen-kuis');
+        tampilkanSoal();
+    }
+
+    function tampilkanSoal() {
+        const dataSoal = state.soalTersedia[state.indeksSoal];
+        
+        // Perbarui progres bar
+        const persentase = ((state.indeksSoal) / state.soalTersedia.length) * 100;
+        document.getElementById('progressBar').style.width = `${persentase}%`;
+
+        // Tampilkan teks pertanyaan
+        document.getElementById('teksSoal').innerText = dataSoal.soal;
+
+        // Acak opsi jawaban menggunakan algoritma Fisher-Yates
+        let opsiAcak = [...dataSoal.opsi];
+        for (let i = opsiAcak.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opsiAcak[i], opsiAcak[j]] = [opsiAcak[j], opsiAcak[i]];
+        }
+
+        // Suntikkan tombol opsi ke layar
+        const wadahOpsi = document.getElementById('wadahOpsi');
+        wadahOpsi.innerHTML = '';
+        opsiAcak.forEach(teksOpsi => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerText = teksOpsi;
+            btn.onclick = () => cekJawaban(teksOpsi, dataSoal.jawaban);
+            wadahOpsi.appendChild(btn);
+        });
+    }
+
+    function cekJawaban(jawabanPilih, jawabanBenar) {
+        const overlay = document.getElementById('feedback-overlay');
+        const icon = document.getElementById('feedback-icon');
+
+        if(jawabanPilih === jawabanBenar) {
+            state.skor += 10;
+            document.getElementById('skorKuis').innerText = state.skor;
+            icon.innerHTML = "✅";
+            icon.className = "feedback-icon feedback-correct";
+        } else {
+            icon.innerHTML = "❌";
+            icon.className = "feedback-icon feedback-wrong";
+            // Jika salah, getarkan HP (jika didukung peramban)
+            if(navigator.vibrate) navigator.vibrate(200);
+        }
+
+        // Tampilkan umpan balik
+        overlay.classList.add('show');
+        
+        // Jeda singkat sebelum soal berikutnya
+        setTimeout(() => {
+            overlay.classList.remove('show');
+            state.indeksSoal++;
+            
+            if(state.indeksSoal < state.soalTersedia.length) {
+                tampilkanSoal();
+            } else {
+                selesaiKuis();
+            }
+        }, 1200);
+    }
+
+    function selesaiKuis() {
+        document.getElementById('progressBar').style.width = '100%';
+        // Kirim data ke GAS (Implementasi tertunda menunggu URL Endpoint)
+        /*
+        fetch('URL_WEB_APP_GAS', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+                namaPeserta: state.peserta,
+                kategori: state.kategoriAktif,
+                skor: state.skor
+            })
+        });
+        */
+        setTimeout(() => {
+            alert(`Luar biasa, ${state.peserta}! \nKamu mendapat skor ${state.skor} di tantangan ${state.kategoriAktif}.`);
+            keluarKuis();
+        }, 500);
+    }
+
+    function keluarKuis() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(err => console.log(err));
+        }
+        bukaLayar('screen-kategori-uji');
+    }
+</script>
+</body>
+</html>
