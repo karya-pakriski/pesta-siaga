@@ -423,12 +423,7 @@
     /* ============================================================
        SCREEN: ARENA KUIS
        ============================================================ */
-    #s-kuis { background: var(--bg); }
-    .kuis-header {
-      background: var(--white); padding: 12px 16px 0;
-      border-bottom: 2px solid var(--hijau-light);
-      position: sticky; top: 0; z-index: 10; flex-shrink: 0;
-    }
+    .kuis-header { background: var(--white); padding: 12px 16px 0; border-bottom: 2px solid var(--hijau-light); position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
     .kuis-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .kuis-judul-txt { font-size: 14px; font-weight: 800; color: var(--hijau); }
     .skor-chip { display: flex; align-items: center; gap: 5px; background: var(--hijau-light); padding: 5px 12px; border-radius: 99px; }
@@ -440,39 +435,36 @@
     .prog-counter { font-size: 11px; font-weight: 800; color: var(--text-mid); white-space: nowrap; }
 
     .kuis-body { padding: 14px 16px 24px; flex: 1; }
-    .soal-box {
-      background: var(--white); border-radius: var(--r);
-      border: 2.5px solid var(--hijau-border); overflow: hidden;
-      margin-bottom: 14px; box-shadow: var(--shadow);
-    }
+    .soal-box { background: var(--white); border-radius: var(--r); border: 2.5px solid var(--hijau-border); overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow); }
     .soal-teks-wrap  { padding: 20px; text-align: center; }
     .soal-teks       { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.65; }
-    .soal-gambar-wrap { background: var(--hijau-light); display: flex; flex-direction: column; align-items: center; }
+    .soal-gambar-wrap { background: var(--white); display: flex; flex-direction: column; align-items: center; padding-top: 10px;}
     .soal-gambar     { width: 100%; max-height: 230px; object-fit: contain; }
-    .soal-hint       { padding: 10px 16px; font-size: 14px; font-weight: 700; color: var(--text-mid); text-align: center; }
+    .soal-hint       { padding: 10px 16px; font-size: 14px; font-weight: 700; color: var(--hijau); text-align: center; }
 
     .opsi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .opsi-btn {
       border-radius: var(--r); border: 2.5px solid var(--hijau-light);
-      background: var(--white); padding: 10px; cursor: pointer;
+      background: var(--white); padding: 8px; cursor: pointer;
       transition: all 0.15s; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 7px;
-      min-height: 88px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      min-height: 88px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;
     }
     .opsi-btn:active:not(:disabled) { background: var(--hijau-light); transform: scale(0.97); }
     .opsi-btn:disabled { cursor: not-allowed; }
     .opsi-btn.benar { border-color: var(--hijau); background: var(--hijau-light); }
     .opsi-btn.salah { border-color: var(--merah); background: var(--merah-light); }
-    .opsi-img        { width: 100%; height: 76px; object-fit: contain; border-radius: 8px; background: var(--hijau-light); }
-    .opsi-lbl-gambar { font-size: 11px; font-weight: 700; color: var(--text-mid); text-align: center; line-height: 1.3; }
+    
+    /* Gambar lebih besar dan menghilangkan label teks */
+    .opsi-img        { width: 100%; height: 130px; object-fit: contain; border-radius: 8px; background: transparent; }
     .opsi-lbl-teks   { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.45; padding: 4px; }
     .opsi-skeleton {
-      width: 100%; height: 76px; border-radius: 8px;
+      width: 100%; height: 130px; border-radius: 8px;
       background: linear-gradient(90deg, var(--hijau-light) 25%, #d4ebd6 50%, var(--hijau-light) 75%);
       background-size: 200% 100%; animation: shimmer 1.2s infinite;
     }
     @keyframes shimmer { to { background-position: -200% 0; } }
-
+    
     /* ============================================================
        FEEDBACK OVERLAY
        ============================================================ */
@@ -714,9 +706,9 @@
           <div class="t-icon">🏛️</div>
           <div><div class="t-label">Sumbu Filosofi</div><div class="t-hint" id="hint-sumbu">— soal</div></div>
         </button>
-        <button class="t-card tc-siapa" onclick="mulaiKuis('Siapa Aku')">
+        <button class="t-card tc-siapa" onclick="mulaiKuis('Tebak Aku')">
           <div class="t-icon">🖼️</div>
-          <div><div class="t-label">Siapa Aku?</div><div class="t-hint" id="hint-siapa">— soal</div></div>
+          <div><div class="t-label">Tebak Aku?</div><div class="t-hint" id="hint-siapa">— soal</div></div>
         </button>
         <button class="t-card tc-unggah" onclick="mulaiKuis('Unggah-ungguh')">
           <div class="t-icon">🙏</div>
@@ -996,7 +988,7 @@ function keluarKeLogin() {
 const KATEGORI_MATERI = [
   { id: 'Pahlawan',       icon: '🦸', kelas: 'kc-pahlawan'  },
   { id: 'Sumbu Filosofi', icon: '🏛️', kelas: 'kc-sumbu'     },
-  { id: 'Siapa Aku',      icon: '🖼️', kelas: 'kc-siapa'     },
+  { id: 'Tebak Aku',      icon: '🖼️', kelas: 'kc-siapa'     },
   { id: 'Unggah-ungguh',  icon: '🙏', kelas: 'kc-unggah'    },
   { id: 'Toleransi',      icon: '🤝', kelas: 'kc-toleransi' }
 ];
@@ -1047,7 +1039,6 @@ function renderKartu() {
   document.getElementById('btn-next').disabled = (APP.kartuIdx === total - 1);
 
   const imgArea = document.getElementById('kartu-img-area');
-  // Perubahan pembacaan file dari lokal
   if (gambarObj && gambarObj.Nama_File) {
     imgArea.innerHTML = `<img src="${getImageUrl(gambarObj.Nama_File)}" alt="${kartu.Judul}" onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">`;
   } else {
@@ -1103,7 +1094,7 @@ function updateHintSoal() {
   const map = {
     'Pahlawan'       : 'hint-pahlawan',
     'Sumbu Filosofi' : 'hint-sumbu',
-    'Siapa Aku'      : 'hint-siapa',
+    'Tebak Aku'      : 'hint-siapa',
     'Unggah-ungguh'  : 'hint-unggah',
     'Toleransi'      : 'hint-toleransi'
   };
@@ -1132,8 +1123,7 @@ function mulaiKuis(kategori) {
   if (kategori === 'Uji Semua') {
     pool = fisherYates([...(APP.rawData.Soal || [])]).slice(0, APP.config.campuran);
   } else {
-    pool = fisherYates((APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori));
-  }
+    pool = fisherYates((APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori)).slice(0, APP.config.campuran);  }
 
   if (pool.length === 0) {
     showModal(`Soal untuk kategori "${kategori}" belum diinput oleh Pembina.`, 'Kuis Kosong');
@@ -1165,12 +1155,18 @@ function renderKontenSoal(soal) {
   const box = document.getElementById('soal-box');
   if (soal.Tipe_Input === 'Gambar') {
     const gbj = APP.kamus[soal.ID_Gambar_Soal];
-    // Perubahan pembacaan file dari lokal
     const url = (gbj && gbj.Nama_File) ? getImageUrl(gbj.Nama_File) : '';
+    
+    // Sesuaikan instruksi untuk Tebak Aku
+    let teksInstruksi = soal.Konten_Soal || '';
+    if (soal.Kategori_Uji === 'Tebak Aku' && !teksInstruksi) {
+      teksInstruksi = "Pilih opsi yang sesuai dengan gambar di atas!";
+    }
+
     box.innerHTML = `
       <div class="soal-gambar-wrap">
         ${url ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">` : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'}
-        <div class="soal-hint">Siapakah tokoh / tempat ini?</div>
+        ${teksInstruksi ? `<div class="soal-hint">${teksInstruksi}</div>` : ''}
       </div>
     `;
   } else {
@@ -1187,15 +1183,14 @@ function renderOpsi(opsiArr, tipeOpsi) {
     btn.className = 'opsi-btn';
 
     if (tipeOpsi === 'Gambar') {
-      // Perubahan pembacaan file dari lokal
       const url = item.Nama_File ? getImageUrl(item.Nama_File) : '';
+      // Label teks dihilangkan agar gambar mengisi ruang maksimal
       btn.innerHTML = `
         <div class="opsi-skeleton" id="sk-${item.ID_Gambar}"></div>
         <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}"
              src="${url}" alt="${item.Keterangan}"
              onload="onOpsiImgLoad('${item.ID_Gambar}')"
              onerror="onOpsiImgError('${item.ID_Gambar}','${escapeHtml(item.Keterangan)}')">
-        <span class="opsi-lbl-gambar">${item.Keterangan}</span>
       `;
     } else {
       btn.innerHTML = `<span class="opsi-lbl-teks">${item.Keterangan}</span>`;
@@ -1256,36 +1251,49 @@ function sembunyikanFeedback() { document.getElementById('feedback').className =
 function keluarKuis() { sembunyikanFeedback(); showScreen('s-pilih'); }
 
 /* ============================================================
-   11. AUTO-DISTRACTOR (Logika Diperbaiki)
+   11. AUTO-DISTRACTOR (Logika Peminjaman Lintas Kategori)
    ============================================================ */
 function buatOpsi(soal) {
   const jawabanData = soal.Jawaban_Benar;
   const kategori    = soal.Kategori_Uji;
   const allData     = APP.rawData.Gambar || [];
 
-  // 1. Ambil pengecoh (selalu cari yang ID atau Keterangan tidak sama dengan jawaban)
-  let pool = allData.filter(item => item.Kategori === kategori && item.ID_Gambar !== jawabanData && item.Keterangan !== jawabanData);
+  let pool = [];
 
-  // Jika opsi di kategori yang sama kurang dari 3, pinjam dari kategori lain
+  // Logika Khusus: Tebak Aku meminjam opsi dari Pahlawan atau Sumbu Filosofi
+  if (kategori === 'Tebak Aku') {
+    pool = allData.filter(item => 
+      (item.Kategori === 'Pahlawan' || item.Kategori === 'Sumbu Filosofi') && 
+      item.ID_Gambar !== jawabanData && 
+      item.Keterangan !== jawabanData
+    );
+  } else {
+    pool = allData.filter(item => 
+      item.Kategori === kategori && 
+      item.ID_Gambar !== jawabanData && 
+      item.Keterangan !== jawabanData
+    );
+  }
+
+  // Jika opsi kurang dari 3, ambil pengecoh acak dari kategori lainnya
   if (pool.length < 3) {
-    const fallback = fisherYates(allData.filter(item => item.Kategori !== kategori && item.ID_Gambar !== jawabanData && item.Keterangan !== jawabanData));
+    const fallback = fisherYates(allData.filter(item => 
+      item.Kategori !== kategori && 
+      item.ID_Gambar !== jawabanData && 
+      item.Keterangan !== jawabanData
+    ));
     pool = [...pool, ...fallback];
   }
 
   const pengecoh = fisherYates(pool).slice(0, 3);
-
-  // 2. Tentukan Jawaban Benar
-  // Cari apakah jawaban terdaftar di dalam referensi (sheet Gambar) berdasarkan ID atau Teks langsung
   let jawabanObj = allData.find(item => item.ID_Gambar === jawabanData || item.Keterangan === jawabanData);
 
-  // Jika guru mengetik jawaban berupa teks murni yang tidak ada di daftar referensi, kita buat objek mandiri
   if (!jawabanObj) {
     jawabanObj = { ID_Gambar: jawabanData, Keterangan: jawabanData, Nama_File: '' };
   }
 
   return fisherYates([jawabanObj, ...pengecoh]);
 }
-
 /* ============================================================
    12. HASIL AKHIR
    ============================================================ */
