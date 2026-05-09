@@ -138,15 +138,22 @@
     #s-loading.active { display: flex; }
     .splash-logo { font-size: 72px; animation: pulse 2s ease-in-out infinite; }
     .splash-title { font-size: 22px; font-weight: 900; text-align: center; line-height: 1.2; }
-    .splash-sub   { font-size: 13px; opacity: 0.75; }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 4px solid rgba(255,255,255,0.25);
-      border-top-color: var(--kuning);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    
+    .loading-box {
+      width: 70%; max-width: 220px; text-align: center; margin-top: 10px;
     }
-    @keyframes spin  { to { transform: rotate(360deg); } }
+    .loading-bar-bg {
+      width: 100%; height: 12px; background: rgba(255,255,255,0.25);
+      border-radius: 8px; overflow: hidden; margin-bottom: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .loading-bar-fill {
+      width: 0%; height: 100%; background: var(--kuning);
+      transition: width 0.3s ease-out; border-radius: 8px;
+    }
+    .loading-pct { font-size: 18px; font-weight: 900; color: var(--kuning); letter-spacing: 1px; }
+    .splash-sub { font-size: 13px; opacity: 0.85; font-weight: 600; }
+    
     @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
 
     /* ============================================================
@@ -387,11 +394,8 @@
       transition: transform 0.15s; box-shadow: var(--shadow);
     }
     .t-card:active { transform: scale(0.96); }
-    .t-card.wide { grid-column: span 2; flex-direction: row; padding: 16px 20px; align-items: center; gap: 14px; }
-    .t-card.wide .t-text { flex: 1; text-align: left; }
-
+    
     .t-icon  { font-size: 34px; }
-    .t-card.wide .t-icon { font-size: 42px; flex-shrink: 0; }
     .t-label { font-size: 13px; font-weight: 800; line-height: 1.2; }
     .t-hint  { font-size: 11px; font-weight: 600; opacity: 0.7; }
 
@@ -400,8 +404,6 @@
     .tc-siapa     { background: #E3F2FD; color: var(--biru); }
     .tc-unggah    { background: #FBE9E7; color: var(--oranye); }
     .tc-toleransi { background: #F3E5F5; color: var(--ungu); }
-    .tc-semua     { background: var(--hijau); color: var(--white); }
-    .tc-semua .t-hint { opacity: 0.8; }
 
     /* ============================================================
        SCREEN: ARENA KUIS
@@ -543,8 +545,15 @@
   <div id="s-loading" class="screen active">
     <div class="splash-logo">⚜️</div>
     <div class="splash-title">SIMULASI<br>PESTA SIAGA</div>
-    <div class="spinner"></div>
-    <div class="splash-sub">Memuat data dari server...</div>
+    
+    <div class="loading-box">
+      <div class="loading-bar-bg">
+        <div class="loading-bar-fill" id="loading-fill"></div>
+      </div>
+      <div class="loading-pct" id="loading-pct">0%</div>
+    </div>
+    
+    <div class="splash-sub" id="loading-sub">Menyiapkan arena...</div>
   </div>
 
   <div id="s-tutup" class="screen">
@@ -608,14 +617,14 @@
           <div class="card-icon">🎯</div>
           <div>
             <div class="card-label">Uji Diri</div>
-            <div class="card-desc">Mulai kuis!</div>
+            <div class="card-desc">Pilih kategori kuis!</div>
           </div>
         </button>
-        <button class="menu-card mc-log wide" onclick="showScreen('s-pilih')">
+        <button class="menu-card mc-log wide" onclick="mulaiKuis('Uji Semua')">
           <div class="card-icon">🏆</div>
           <div class="card-text">
             <div class="card-label">Uji Semua Materi</div>
-            <div class="card-desc">Campuran semua kategori lomba</div>
+            <div class="card-desc" id="hint-semua">Campuran semua kategori lomba</div>
           </div>
           <div class="card-arrow">→</div>
         </button>
@@ -692,13 +701,6 @@
         <button class="t-card tc-toleransi" onclick="mulaiKuis('Toleransi')">
           <div class="t-icon">🤝</div>
           <div><div class="t-label">Toleransi</div><div class="t-hint" id="hint-toleransi">— soal</div></div>
-        </button>
-        <button class="t-card tc-semua wide" onclick="mulaiKuis('Uji Semua')">
-          <div class="t-icon">🏆</div>
-          <div class="t-text">
-            <div class="t-label">UJI SEMUA MATERI</div>
-            <div class="t-hint" id="hint-semua">Campuran semua kategori</div>
-          </div>
         </button>
       </div>
     </div>
@@ -779,20 +781,50 @@ const APP = {
   soalList      : [],
   soalIdx       : 0,
   skor          : 0,
-  jawabanId     : ''   // ID_Gambar jawaban benar soal aktif
+  jawabanId     : '',  // ID_Gambar jawaban benar soal aktif
+  // Progress Animasi
+  loadInt       : null,
+  loadPct       : 0
 };
 
 /* ============================================================
-   3. NAVIGASI
+   3. ANIMASI LOADING & NAVIGASI
    ============================================================ */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   if (el) {
     el.classList.add('active');
-    // Gulir kembali ke bagian paling atas untuk layar spesifik
     el.scrollTop = 0; 
   }
+}
+
+function startLoadingAnim() {
+  showScreen('s-loading');
+  APP.loadPct = 0;
+  document.getElementById('loading-fill').style.width = '0%';
+  document.getElementById('loading-pct').textContent = '0%';
+  document.getElementById('loading-sub').textContent = 'Membuka arena Pesta Siaga...';
+
+  APP.loadInt = setInterval(() => {
+    if (APP.loadPct < 88) {
+      APP.loadPct += Math.floor(Math.random() * 12) + 2;
+      if (APP.loadPct > 88) APP.loadPct = 88;
+      document.getElementById('loading-fill').style.width = APP.loadPct + '%';
+      document.getElementById('loading-pct').textContent = APP.loadPct + '%';
+    }
+  }, 250);
+}
+
+function finishLoadingAnim(callback) {
+  clearInterval(APP.loadInt);
+  document.getElementById('loading-fill').style.width = '100%';
+  document.getElementById('loading-pct').textContent = '100%';
+  document.getElementById('loading-sub').textContent = 'Selesai! Ayo mulai!';
+  
+  setTimeout(() => {
+    callback();
+  }, 650);
 }
 
 /* ============================================================
@@ -801,20 +833,21 @@ function showScreen(id) {
 window.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  showScreen('s-loading');
-  // Jika URL belum dikonfigurasi, langsung tampilkan login tanpa fetch
+  startLoadingAnim();
+
+  // Jika URL belum dikonfigurasi
   if (!GAS_URL || GAS_URL.includes('GANTI')) {
-    console.warn('GAS_URL belum dikonfigurasi. Menampilkan login tanpa data.');
-    showScreen('s-login');
+    console.warn('GAS_URL belum dikonfigurasi. Lanjut ke login.');
+    finishLoadingAnim(() => showScreen('s-login'));
     return;
   }
+  
   try {
     const json = await fetchData();
-    prosesDariGAS(json);
+    finishLoadingAnim(() => prosesDariGAS(json));
   } catch (err) {
     console.error('Gagal fetch awal:', err);
-    // Tetap tampilkan login; data akan di-fetch ulang saat masuk
-    showScreen('s-login');
+    finishLoadingAnim(() => showScreen('s-login'));
   }
 }
 
@@ -824,23 +857,17 @@ async function fetchData() {
   return res.json();
 }
 
-/**
- * Memproses respons JSON dari GAS.
- * Menentukan apakah harus tampilkan tutup/login/menu.
- */
+/** Memproses respons JSON dari GAS */
 function prosesDariGAS(json) {
   if (!json) { showScreen('s-login'); return; }
-
   if (json.status === 'closed') { showScreen('s-tutup'); return; }
 
   if (json.status === 'success' && json.data) {
     APP.rawData = json.data;
     APP.kamus   = buildKamus(json.data.Gambar);
     APP.config  = parseConfig(json.data.Pengaturan);
-    // Data sudah siap, tampilkan login
     showScreen('s-login');
   } else {
-    console.error('Respons GAS tidak dikenal:', json);
     showScreen('s-login');
   }
 }
@@ -859,35 +886,35 @@ async function handleLogin() {
   errEl.classList.remove('show');
   APP.peserta = nama;
 
-  // Jika data belum ada (fetch awal gagal), fetch sekarang
   if (!APP.rawData) {
-    showScreen('s-loading');
+    startLoadingAnim();
     try {
       const json = await fetchData();
-      if (json.status === 'closed') { showScreen('s-tutup'); return; }
+      if (json.status === 'closed') { finishLoadingAnim(() => showScreen('s-tutup')); return; }
       if (json.status === 'success') {
         APP.rawData = json.data;
         APP.kamus   = buildKamus(json.data.Gambar);
         APP.config  = parseConfig(json.data.Pengaturan);
+        finishLoadingAnim(lanjutKeMenu);
       } else {
         alert('Gagal memuat data. Periksa koneksi internet.');
-        showScreen('s-login');
-        return;
+        finishLoadingAnim(() => showScreen('s-login'));
       }
     } catch (err) {
       alert('Tidak bisa terhubung ke server. Coba lagi.');
-      showScreen('s-login');
-      return;
+      finishLoadingAnim(() => showScreen('s-login'));
     }
+  } else {
+    lanjutKeMenu();
   }
+}
 
-  // Cek status akses sekali lagi dari data terbaru
+function lanjutKeMenu() {
   if (!checkAccess(APP.rawData.Pengaturan)) {
     showScreen('s-tutup');
     return;
   }
-
-  document.getElementById('disp-nama').textContent = nama;
+  document.getElementById('disp-nama').textContent = APP.peserta;
   updateHintSoal();
   renderKatGrid();
   showScreen('s-menu');
@@ -896,8 +923,6 @@ async function handleLogin() {
 /* ============================================================
    6. MATERI — PILIH KATEGORI & FLASHCARD
    ============================================================ */
-
-// Daftar kategori Materi dengan metadata tampilan
 const KATEGORI_MATERI = [
   { id: 'Pahlawan',       icon: '🦸', kelas: 'kc-pahlawan'  },
   { id: 'Sumbu Filosofi', icon: '🏛️', kelas: 'kc-sumbu'     },
@@ -906,7 +931,6 @@ const KATEGORI_MATERI = [
   { id: 'Toleransi',      icon: '🤝', kelas: 'kc-toleransi' }
 ];
 
-/** Merender grid kategori materi berdasarkan data yang tersedia */
 function renderKatGrid() {
   const grid = document.getElementById('kat-grid');
   if (!APP.rawData) { grid.innerHTML = '<div class="kat-empty">Data materi belum tersedia.</div>'; return; }
@@ -916,7 +940,7 @@ function renderKatGrid() {
 
   KATEGORI_MATERI.forEach(kat => {
     const jumlah = (APP.rawData.Materi || []).filter(m => m.Kategori === kat.id).length;
-    if (jumlah === 0) return; // Sembunyikan kategori tanpa data
+    if (jumlah === 0) return;
     adaKonten = true;
 
     const card = document.createElement('button');
@@ -935,7 +959,6 @@ function renderKatGrid() {
   }
 }
 
-/** Membuka flashcard untuk kategori tertentu */
 function bukaMateri(kategori, icon) {
   const list = (APP.rawData.Materi || []).filter(m => m.Kategori === kategori);
   if (list.length === 0) {
@@ -954,21 +977,17 @@ function bukaMateri(kategori, icon) {
   showScreen('s-kartu');
 }
 
-/** Merender flashcard pada indeks aktif */
 function renderKartu() {
   const kartu      = APP.kartuList[APP.kartuIdx];
   const total      = APP.kartuList.length;
   const gambarObj  = APP.kamus[kartu.ID_Gambar];
 
-  // Counter & dots
   document.getElementById('kartu-counter').textContent = `${APP.kartuIdx + 1}/${total}`;
   renderDots(total, APP.kartuIdx);
 
-  // Tombol navigasi
   document.getElementById('btn-prev').disabled = (APP.kartuIdx === 0);
   document.getElementById('btn-next').disabled = (APP.kartuIdx === total - 1);
 
-  // Area gambar
   const imgArea = document.getElementById('kartu-img-area');
   if (gambarObj && gambarObj.ID_Drive) {
     imgArea.innerHTML = `
@@ -980,15 +999,12 @@ function renderKartu() {
     imgArea.innerHTML = `<div class="kartu-no-img">📄</div>`;
   }
 
-  // Konten teks
   document.getElementById('kartu-judul').textContent       = kartu.Judul || '';
   document.getElementById('kartu-penjelasan').textContent  = kartu.Penjelasan || '';
 }
 
-/** Merender titik indikator halaman */
 function renderDots(total, aktif) {
   const wrap = document.getElementById('dots');
-  // Batasi maksimal 10 dots agar tidak overflow
   const maxDots = Math.min(total, 10);
   wrap.innerHTML = '';
   for (let i = 0; i < maxDots; i++) {
@@ -1001,11 +1017,9 @@ function renderDots(total, aktif) {
 function prevKartu() { if (APP.kartuIdx > 0) { APP.kartuIdx--; renderKartu(); } }
 function nextKartu() { if (APP.kartuIdx < APP.kartuList.length - 1) { APP.kartuIdx++; renderKartu(); } }
 
-// Bind tombol navigasi kartu
 document.getElementById('btn-prev').onclick = prevKartu;
 document.getElementById('btn-next').onclick = nextKartu;
 
-/** Inisialisasi gesture swipe pada flashcard */
 function inisialisasiSwipe() {
   const fc = document.getElementById('flashcard');
   fc.addEventListener('touchstart', e => {
@@ -1018,7 +1032,6 @@ function inisialisasiSwipe() {
     fc.classList.remove('swiping');
     const dx = e.changedTouches[0].clientX - APP.touchStartX;
     const dy = e.changedTouches[0].clientY - APP.touchStartY;
-    // Hanya proses swipe horizontal (bukan scroll vertikal)
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
       if (dx < 0) nextKartu(); else prevKartu();
     }
@@ -1028,8 +1041,6 @@ function inisialisasiSwipe() {
 /* ============================================================
    7. KUIS — PILIH KATEGORI
    ============================================================ */
-
-/** Memperbarui hint jumlah soal di layar pilih tantangan */
 function updateHintSoal() {
   if (!APP.rawData) return;
   const soalAll = APP.rawData.Soal || [];
@@ -1057,12 +1068,9 @@ function updateHintSoal() {
 /* ============================================================
    8. KUIS — MESIN UTAMA
    ============================================================ */
-
-/** Memulai sesi kuis untuk kategori tertentu */
 function mulaiKuis(kategori) {
   if (!APP.rawData) { alert('Data belum tersedia.'); return; }
 
-  // Fullscreen untuk fokus ujian
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
@@ -1071,7 +1079,6 @@ function mulaiKuis(kategori) {
   APP.skor     = 0;
   APP.soalIdx  = 0;
 
-  // Kumpulkan soal berdasarkan mode
   let pool;
   if (kategori === 'Uji Semua') {
     pool = fisherYates([...(APP.rawData.Soal || [])]).slice(0, APP.config.campuran);
@@ -1095,25 +1102,20 @@ function mulaiKuis(kategori) {
   renderSoal();
 }
 
-/** Merender soal pada indeks aktif */
 function renderSoal() {
   const soal  = APP.soalList[APP.soalIdx];
   const total = APP.soalList.length;
 
-  // Update progress
   document.getElementById('prog-fill').style.width    = `${(APP.soalIdx / total) * 100}%`;
   document.getElementById('prog-counter').textContent = `${APP.soalIdx + 1}/${total}`;
 
-  // Render konten soal
   renderKontenSoal(soal);
 
-  // Build & render opsi jawaban (auto-distractor)
-  const opsiArr    = buatOpsi(soal);
-  APP.jawabanId    = soal.Jawaban_Benar;
+  const opsiArr = buatOpsi(soal);
+  APP.jawabanId = soal.Jawaban_Benar;
   renderOpsi(opsiArr, soal.Tipe_Opsi);
 }
 
-/** Merender area konten soal berdasarkan Tipe_Input */
 function renderKontenSoal(soal) {
   const box = document.getElementById('soal-box');
 
@@ -1123,17 +1125,13 @@ function renderKontenSoal(soal) {
     box.innerHTML = `
       <div class="soal-gambar-wrap">
         ${url
-          ? `<img class="soal-gambar"
-                  src="${url}"
-                  alt="Gambar soal"
-                  onerror="this.style.display='none'">`
+          ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">`
           : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'
         }
         <div class="soal-hint">Siapakah tokoh / tempat ini?</div>
       </div>
     `;
   } else {
-    // Default: Teks
     box.innerHTML = `
       <div class="soal-teks-wrap">
         <div class="soal-teks">${soal.Konten_Soal || '—'}</div>
@@ -1142,7 +1140,6 @@ function renderKontenSoal(soal) {
   }
 }
 
-/** Merender 4 opsi jawaban berdasarkan Tipe_Opsi */
 function renderOpsi(opsiArr, tipeOpsi) {
   const grid = document.getElementById('opsi-grid');
   grid.innerHTML = '';
@@ -1156,14 +1153,12 @@ function renderOpsi(opsiArr, tipeOpsi) {
       btn.innerHTML = `
         <div class="opsi-skeleton" id="sk-${item.ID_Gambar}"></div>
         <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}"
-             src="${url}"
-             alt="${item.Keterangan}"
+             src="${url}" alt="${item.Keterangan}"
              onload="onOpsiImgLoad('${item.ID_Gambar}')"
              onerror="onOpsiImgError('${item.ID_Gambar}','${escapeHtml(item.Keterangan)}')">
         <span class="opsi-lbl-gambar">${item.Keterangan}</span>
       `;
     } else {
-      // Teks
       btn.innerHTML = `<span class="opsi-lbl-teks">${item.Keterangan}</span>`;
     }
 
@@ -1172,7 +1167,6 @@ function renderOpsi(opsiArr, tipeOpsi) {
   });
 }
 
-/** Dipanggil saat gambar opsi selesai dimuat */
 function onOpsiImgLoad(id) {
   const sk  = document.getElementById('sk-' + id);
   const img = document.getElementById('img-' + id);
@@ -1180,7 +1174,6 @@ function onOpsiImgLoad(id) {
   if (img) img.style.display = 'block';
 }
 
-/** Dipanggil saat gambar opsi gagal dimuat */
 function onOpsiImgError(id, keterangan) {
   const sk  = document.getElementById('sk-' + id);
   if (sk) {
@@ -1198,9 +1191,7 @@ function onOpsiImgError(id, keterangan) {
   }
 }
 
-/** Memeriksa jawaban yang dipilih peserta */
 function cekJawaban(pilihanId) {
-  // Disable semua opsi untuk mencegah double-tap
   document.querySelectorAll('.opsi-btn').forEach(b => b.disabled = true);
 
   const benar = (pilihanId === APP.jawabanId);
@@ -1225,13 +1216,11 @@ function cekJawaban(pilihanId) {
   }, 1200);
 }
 
-/** Menampilkan overlay feedback benar/salah */
 function tampilFeedback(tipe) {
   const el   = document.getElementById('feedback');
   const icon = document.getElementById('fb-icon');
   el.className = '';
   icon.textContent = tipe === 'benar' ? '✅' : '❌';
-  // Force reflow untuk restart animasi
   void el.offsetWidth;
   el.className = `show ${tipe}`;
 }
@@ -1240,7 +1229,6 @@ function sembunyikanFeedback() {
   document.getElementById('feedback').className = '';
 }
 
-/** Keluar dari kuis (tombol ✕) */
 function keluarKuis() {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   sembunyikanFeedback();
@@ -1250,27 +1238,15 @@ function keluarKuis() {
 /* ============================================================
    9. AUTO-DISTRACTOR — Buat 4 opsi dari pool kategori
    ============================================================ */
-
-/**
- * Menghasilkan array 4 opsi jawaban (1 benar + 3 pengecoh acak)
- * dari pool gambar kategori yang sama.
- *
- * Fallback: jika pool utama < 3, ambil kekurangan dari kategori lain.
- *
- * @param  {Object} soal  - Objek soal dari sheet Soal
- * @returns {Array}  Array 4 objek Gambar yang sudah diacak posisinya
- */
 function buatOpsi(soal) {
   const jawabanId = soal.Jawaban_Benar;
   const kategori  = soal.Kategori_Uji;
   const allGambar = APP.rawData.Gambar || [];
 
-  // Pool utama: kategori sama, bukan jawaban benar
   let pool = allGambar.filter(g =>
     g.Kategori === kategori && g.ID_Gambar !== jawabanId
   );
 
-  // Fallback jika pool kurang dari 3
   if (pool.length < 3) {
     const fallback = fisherYates(
       allGambar.filter(g =>
@@ -1280,29 +1256,21 @@ function buatOpsi(soal) {
     pool = [...pool, ...fallback];
   }
 
-  // Ambil 3 pengecoh acak
   const pengecoh = fisherYates(pool).slice(0, 3);
-
-  // Temukan objek jawaban benar dari kamus
   const jawabanObj = allGambar.find(g => g.ID_Gambar === jawabanId);
 
   if (!jawabanObj) {
-    console.warn('[Auto-Distractor] Jawaban benar tidak ditemukan di sheet Gambar:', jawabanId);
-    // Kembalikan hanya pengecoh (soal tetap ditampilkan meski tidak ideal)
+    console.warn('[Auto-Distractor] Jawaban benar tidak ditemukan:', jawabanId);
     return fisherYates(pengecoh);
   }
 
-  // Gabungkan & acak posisi 4 opsi
   return fisherYates([jawabanObj, ...pengecoh]);
 }
 
 /* ============================================================
    10. HASIL AKHIR
    ============================================================ */
-
-/** Menampilkan layar hasil setelah semua soal selesai */
 function selesaiKuis() {
-  // Update progress bar ke 100%
   document.getElementById('prog-fill').style.width = '100%';
 
   const total      = APP.soalList.length;
@@ -1323,26 +1291,21 @@ function selesaiKuis() {
   document.getElementById('hasil-bintang').textContent = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
   document.getElementById('hasil-pesan').textContent = PESAN[bintang];
 
-  // Keluar fullscreen
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
 
   showScreen('s-hasil');
-
-  // Kirim skor ke GAS (silent, fire-and-forget)
   kirimSkor();
 }
 
-/** Ulangi kuis dengan kategori yang sama */
 function ulangiKuis() {
   mulaiKuis(APP.kategori);
 }
 
-/** POST skor ke GAS secara silent */
 function kirimSkor() {
   if (!GAS_URL || GAS_URL.includes('GANTI')) return;
   fetch(GAS_URL, {
     method  : 'POST',
-    mode    : 'no-cors',  // Fire and forget — tidak perlu baca respons
+    mode    : 'no-cors',
     headers : { 'Content-Type': 'application/json' },
     body    : JSON.stringify({
       action      : 'submitScore',
@@ -1356,22 +1319,11 @@ function kirimSkor() {
 /* ============================================================
    11. FUNGSI UTILITAS
    ============================================================ */
-
-/**
- * Menghasilkan URL thumbnail Google Drive dari File ID.
- * @param {string} idDrive - File ID Google Drive
- * @param {string} ukuran  - Ukuran thumbnail, misal 'w300', 'w500', 'w600'
- */
 function getThumbnailURL(idDrive, ukuran = 'w400') {
   if (!idDrive) return '';
   return `https://drive.google.com/thumbnail?id=${idDrive}&sz=${ukuran}`;
 }
 
-/**
- * Fisher-Yates shuffle — mengacak array tanpa mengubah aslinya.
- * @param {Array} arr - Array yang ingin diacak
- * @returns {Array} Array baru yang sudah diacak
- */
 function fisherYates(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -1381,22 +1333,12 @@ function fisherYates(arr) {
   return a;
 }
 
-/**
- * Membangun kamus ID_Gambar → objek Gambar untuk lookup O(1).
- * @param {Array} gambarArr - Array data dari sheet Gambar
- * @returns {Object} Kamus { ID_Gambar: { ID_Drive, Kategori, Keterangan } }
- */
 function buildKamus(gambarArr) {
   const kamus = {};
   (gambarArr || []).forEach(g => { kamus[g.ID_Gambar] = g; });
   return kamus;
 }
 
-/**
- * Mem-parsing array Pengaturan menjadi objek konfigurasi.
- * @param {Array} arr - Array data dari sheet Pengaturan
- * @returns {Object} { poin: number, campuran: number }
- */
 function parseConfig(arr) {
   const cfg = { poin: 10, campuran: 15 };
   (arr || []).forEach(row => {
@@ -1406,18 +1348,12 @@ function parseConfig(arr) {
   return cfg;
 }
 
-/**
- * Memeriksa apakah Status_Akses = "Buka".
- * @param {Array} pengaturanArr - Array data dari sheet Pengaturan
- * @returns {boolean}
- */
 function checkAccess(pengaturanArr) {
   if (!Array.isArray(pengaturanArr) || pengaturanArr.length === 0) return false;
   const row = pengaturanArr.find(r => r.Parameter === 'Status_Akses');
   return row ? row.Nilai === 'Buka' : false;
 }
 
-/** Sanitasi teks untuk dipakai di dalam atribut HTML */
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')
