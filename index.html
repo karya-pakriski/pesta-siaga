@@ -805,37 +805,27 @@ const APP = {
   rawData       : null,
   kamus         : {},
   config        : { poin: 10, campuran: 15 },
-  // Materi / Flashcard
   kartuList     : [],
   kartuIdx      : 0,
   kartuKategori : '',
   touchStartX   : 0,
   touchStartY   : 0,
-  // Kuis
   kategori      : '',
   soalList      : [],
   soalIdx       : 0,
   skor          : 0,
   jawabanId     : '',
-  // Loading animation
   loadInt       : null,
   loadPct       : 0
 };
 
 /* ============================================================
    3. DOMContentLoaded — Titik masuk utama
-   FIX #1: Inisialisasi swipe & tombol nav di sini (bukan global)
-   agar elemen DOM sudah pasti ada.
    ============================================================ */
 window.addEventListener('DOMContentLoaded', () => {
-  // FIX #6: Bind onclick btn-prev/next di dalam DOMContentLoaded
   document.getElementById('btn-prev').onclick = prevKartu;
   document.getElementById('btn-next').onclick = nextKartu;
-
-  // FIX #1: Swipe diinisialisasi SEKALI di sini
   inisialisasiSwipe();
-
-  // Mulai aplikasi
   init();
 });
 
@@ -851,11 +841,8 @@ function closeModal() {
   document.getElementById('custom-modal').classList.remove('show');
 }
 
-function bukaSheetNama() {
-  document.getElementById('sheet-nama').classList.add('show');
-}
+function bukaSheetNama() { document.getElementById('sheet-nama').classList.add('show'); }
 function tutupSheetNama(e) {
-  // Tutup hanya jika klik tepat di overlay (bukan kontennya)
   if (e && e.target !== e.currentTarget) return;
   document.getElementById('sheet-nama').classList.remove('show');
 }
@@ -876,9 +863,6 @@ function showScreen(id) {
 
 /* ============================================================
    5. ANIMASI LOADING BAR
-   FIX #4: clearInterval dulu sebelum membuat interval baru
-           agar tidak ada dua interval jalan bersamaan.
-   FIX #5: Label loading berubah sesuai tahap progress.
    ============================================================ */
 const LOADING_LABELS = [
   { sampai: 30, teks: 'Membuka arena Pesta Siaga...' },
@@ -887,9 +871,7 @@ const LOADING_LABELS = [
 ];
 
 function startLoadingAnim() {
-  // FIX #4: Bersihkan interval lama sebelum buat baru
   if (APP.loadInt) clearInterval(APP.loadInt);
-
   showScreen('s-loading');
   APP.loadPct = 0;
   document.getElementById('loading-fill').style.width = '0%';
@@ -904,7 +886,6 @@ function startLoadingAnim() {
       document.getElementById('loading-fill').style.width = APP.loadPct + '%';
       document.getElementById('loading-pct').textContent  = APP.loadPct + '%';
 
-      // FIX #5: Update label sesuai rentang progress
       const stage = LOADING_LABELS.find(l => APP.loadPct <= l.sampai);
       if (stage) document.getElementById('loading-sub').textContent = stage.teks;
     }
@@ -926,7 +907,6 @@ function finishLoadingAnim(callback) {
 async function init() {
   startLoadingAnim();
   if (!GAS_URL || GAS_URL.includes('GANTI')) {
-    console.warn('GAS_URL belum dikonfigurasi. Lanjut ke login tanpa data.');
     finishLoadingAnim(() => showScreen('s-login'));
     return;
   }
@@ -934,7 +914,6 @@ async function init() {
     const json = await fetchData();
     finishLoadingAnim(() => prosesDariGAS(json));
   } catch (err) {
-    console.error('Fetch gagal:', err);
     finishLoadingAnim(() => showScreen('s-login'));
   }
 }
@@ -945,15 +924,8 @@ async function fetchData() {
   return res.json();
 }
 
-/**
- * Memproses respons JSON dari GAS.
- * FIX #3: Status akses dicek DI SINI sebelum tampilkan login —
- * bukan setelah login — agar alur lebih natural.
- */
 function prosesDariGAS(json) {
   if (!json) { showScreen('s-login'); return; }
-
-  // Tutup langsung jika GAS mengembalikan status closed
   if (json.status === 'closed') { showScreen('s-tutup'); return; }
 
   if (json.status === 'success' && json.data) {
@@ -961,7 +933,6 @@ function prosesDariGAS(json) {
     APP.kamus   = buildKamus(json.data.Gambar);
     APP.config  = parseConfig(json.data.Pengaturan);
 
-    // FIX #3: Cek akses SEBELUM tampilkan form login
     if (!checkAccess(json.data.Pengaturan)) {
       showScreen('s-tutup');
       return;
@@ -980,7 +951,6 @@ async function handleLogin() {
   if (!APP.peserta) { errEl.classList.add('show'); return; }
   errEl.classList.remove('show');
 
-  // Jika data belum ada (fetch awal gagal), coba fetch ulang
   if (!APP.rawData) {
     startLoadingAnim();
     try {
@@ -1034,7 +1004,6 @@ const KATEGORI_MATERI = [
 function renderKatGrid() {
   const grid = document.getElementById('kat-grid');
   if (!APP.rawData) { grid.innerHTML = '<div class="kat-empty">Data materi belum tersedia.</div>'; return; }
-
   grid.innerHTML = '';
   let adaKonten  = false;
 
@@ -1045,18 +1014,12 @@ function renderKatGrid() {
 
     const card = document.createElement('button');
     card.className = `kat-card ${kat.kelas}`;
-    card.innerHTML = `
-      <div class="kat-icon">${kat.icon}</div>
-      <div class="kat-nama">${kat.id}</div>
-      <div class="kat-count">${jumlah} kartu</div>
-    `;
+    card.innerHTML = `<div class="kat-icon">${kat.icon}</div><div class="kat-nama">${kat.id}</div><div class="kat-count">${jumlah} kartu</div>`;
     card.onclick = () => bukaMateri(kat.id, kat.icon);
     grid.appendChild(card);
   });
 
-  if (!adaKonten) {
-    grid.innerHTML = '<div class="kat-empty">📭 Materi belum diisi.<br>Hubungi pembina.</div>';
-  }
+  if (!adaKonten) grid.innerHTML = '<div class="kat-empty">📭 Materi belum diisi.<br>Hubungi pembina.</div>';
 }
 
 function bukaMateri(kategori, icon) {
@@ -1066,13 +1029,10 @@ function bukaMateri(kategori, icon) {
   APP.kartuList     = list;
   APP.kartuIdx      = 0;
   APP.kartuKategori = kategori;
-
   document.getElementById('kartu-bar-title').textContent = (icon || '📖') + ' ' + kategori;
   document.getElementById('kartu-badge').textContent     = kategori;
 
   renderKartu();
-  // FIX #1: Tidak memanggil inisialisasiSwipe() di sini lagi —
-  // swipe sudah diinisialisasi sekali saat DOMContentLoaded.
   showScreen('s-kartu');
 }
 
@@ -1087,12 +1047,9 @@ function renderKartu() {
   document.getElementById('btn-next').disabled = (APP.kartuIdx === total - 1);
 
   const imgArea = document.getElementById('kartu-img-area');
-  if (gambarObj && gambarObj.ID_Drive) {
-    imgArea.innerHTML = `
-      <img src="${getThumbnailURL(gambarObj.ID_Drive, 'w500')}"
-           alt="${kartu.Judul}"
-           onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">
-    `;
+  // Perubahan pembacaan file dari lokal
+  if (gambarObj && gambarObj.Nama_File) {
+    imgArea.innerHTML = `<img src="${getImageUrl(gambarObj.Nama_File)}" alt="${kartu.Judul}" onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">`;
   } else {
     imgArea.innerHTML = `<div class="kartu-no-img">📄</div>`;
   }
@@ -1112,17 +1069,12 @@ function renderDots(total, aktif) {
   }
 }
 
-function prevKartu() { if (APP.kartuIdx > 0)                         { APP.kartuIdx--; renderKartu(); } }
-function nextKartu() { if (APP.kartuIdx < APP.kartuList.length - 1)  { APP.kartuIdx++; renderKartu(); } }
+function prevKartu() { if (APP.kartuIdx > 0) { APP.kartuIdx--; renderKartu(); } }
+function nextKartu() { if (APP.kartuIdx < APP.kartuList.length - 1) { APP.kartuIdx++; renderKartu(); } }
 
-/**
- * Inisialisasi gesture swipe pada flashcard.
- * FIX #1: Dipanggil SEKALI dari DOMContentLoaded dengan guard flag.
- * Tidak akan menumpuk meski bukaMateri() dipanggil berulang kali.
- */
 let swipeInitialized = false;
 function inisialisasiSwipe() {
-  if (swipeInitialized) return; // Guard — cegah listener ganda
+  if (swipeInitialized) return; 
   swipeInitialized = true;
 
   const fc = document.getElementById('flashcard');
@@ -1136,7 +1088,6 @@ function inisialisasiSwipe() {
     fc.classList.remove('swiping');
     const dx = e.changedTouches[0].clientX - APP.touchStartX;
     const dy = e.changedTouches[0].clientY - APP.touchStartY;
-    // Proses hanya jika gerakan horizontal lebih dominan dari vertikal
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
       if (dx < 0) nextKartu(); else prevKartu();
     }
@@ -1205,7 +1156,6 @@ function renderSoal() {
   document.getElementById('prog-counter').textContent = `${APP.soalIdx + 1}/${total}`;
 
   renderKontenSoal(soal);
-
   const opsiArr = buatOpsi(soal);
   APP.jawabanId = soal.Jawaban_Benar;
   renderOpsi(opsiArr, soal.Tipe_Opsi);
@@ -1215,13 +1165,11 @@ function renderKontenSoal(soal) {
   const box = document.getElementById('soal-box');
   if (soal.Tipe_Input === 'Gambar') {
     const gbj = APP.kamus[soal.ID_Gambar_Soal];
-    const url = gbj ? getThumbnailURL(gbj.ID_Drive, 'w600') : '';
+    // Perubahan pembacaan file dari lokal
+    const url = (gbj && gbj.Nama_File) ? getImageUrl(gbj.Nama_File) : '';
     box.innerHTML = `
       <div class="soal-gambar-wrap">
-        ${url
-          ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">`
-          : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'
-        }
+        ${url ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">` : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'}
         <div class="soal-hint">Siapakah tokoh / tempat ini?</div>
       </div>
     `;
@@ -1239,7 +1187,8 @@ function renderOpsi(opsiArr, tipeOpsi) {
     btn.className = 'opsi-btn';
 
     if (tipeOpsi === 'Gambar') {
-      const url = item.ID_Drive ? getThumbnailURL(item.ID_Drive, 'w300') : '';
+      // Perubahan pembacaan file dari lokal
+      const url = item.Nama_File ? getImageUrl(item.Nama_File) : '';
       btn.innerHTML = `
         <div class="opsi-skeleton" id="sk-${item.ID_Gambar}"></div>
         <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}"
@@ -1287,7 +1236,6 @@ function cekJawaban(pilihanId) {
   }
 
   tampilFeedback(benar ? 'benar' : 'salah');
-
   setTimeout(() => {
     sembunyikanFeedback();
     APP.soalIdx++;
@@ -1300,41 +1248,39 @@ function tampilFeedback(tipe) {
   const icon = document.getElementById('fb-icon');
   el.className     = '';
   icon.textContent = tipe === 'benar' ? '✅' : '❌';
-  void el.offsetWidth; // Force reflow untuk restart animasi
+  void el.offsetWidth; 
   el.className = `show ${tipe}`;
 }
 
 function sembunyikanFeedback() { document.getElementById('feedback').className = ''; }
-
-function keluarKuis() {
-  sembunyikanFeedback();
-  showScreen('s-pilih');
-}
+function keluarKuis() { sembunyikanFeedback(); showScreen('s-pilih'); }
 
 /* ============================================================
-   11. AUTO-DISTRACTOR
-   Pool diambil dari kategori yang sama, fallback ke kategori lain.
+   11. AUTO-DISTRACTOR (Logika Diperbaiki)
    ============================================================ */
 function buatOpsi(soal) {
-  const jawabanId = soal.Jawaban_Benar;
-  const kategori  = soal.Kategori_Uji;
-  const allGambar = APP.rawData.Gambar || [];
+  const jawabanData = soal.Jawaban_Benar;
+  const kategori    = soal.Kategori_Uji;
+  const allData     = APP.rawData.Gambar || [];
 
-  // Pool utama: kategori sama, bukan jawaban benar
-  let pool = allGambar.filter(g => g.Kategori === kategori && g.ID_Gambar !== jawabanId);
+  // 1. Ambil pengecoh (selalu cari yang ID atau Keterangan tidak sama dengan jawaban)
+  let pool = allData.filter(item => item.Kategori === kategori && item.ID_Gambar !== jawabanData && item.Keterangan !== jawabanData);
 
-  // Fallback jika pool utama < 3
+  // Jika opsi di kategori yang sama kurang dari 3, pinjam dari kategori lain
   if (pool.length < 3) {
-    const fallback = fisherYates(allGambar.filter(g => g.Kategori !== kategori && g.ID_Gambar !== jawabanId));
+    const fallback = fisherYates(allData.filter(item => item.Kategori !== kategori && item.ID_Gambar !== jawabanData && item.Keterangan !== jawabanData));
     pool = [...pool, ...fallback];
   }
 
-  const pengecoh   = fisherYates(pool).slice(0, 3);
-  const jawabanObj = allGambar.find(g => g.ID_Gambar === jawabanId);
+  const pengecoh = fisherYates(pool).slice(0, 3);
 
+  // 2. Tentukan Jawaban Benar
+  // Cari apakah jawaban terdaftar di dalam referensi (sheet Gambar) berdasarkan ID atau Teks langsung
+  let jawabanObj = allData.find(item => item.ID_Gambar === jawabanData || item.Keterangan === jawabanData);
+
+  // Jika guru mengetik jawaban berupa teks murni yang tidak ada di daftar referensi, kita buat objek mandiri
   if (!jawabanObj) {
-    console.warn('[Auto-Distractor] ID jawaban tidak ditemukan di Gambar:', jawabanId);
-    return fisherYates(pengecoh);
+    jawabanObj = { ID_Gambar: jawabanData, Keterangan: jawabanData, Nama_File: '' };
   }
 
   return fisherYates([jawabanObj, ...pengecoh]);
@@ -1364,7 +1310,7 @@ function selesaiKuis() {
   document.getElementById('hasil-pesan').textContent = PESAN[bintang];
 
   showScreen('s-hasil');
-  kirimSkor(); // Fire-and-forget
+  kirimSkor(); 
 }
 
 function ulangiKuis() { mulaiKuis(APP.kategori); }
@@ -1388,13 +1334,12 @@ function kirimSkor() {
    13. FUNGSI UTILITAS
    ============================================================ */
 
-/** Konversi File ID Google Drive → URL Thumbnail */
-function getThumbnailURL(idDrive, ukuran = 'w400') {
-  if (!idDrive) return '';
-  return `https://drive.google.com/thumbnail?id=${idDrive}&sz=${ukuran}`;
+/** Merubah pembacaan dari Google Drive menjadi Lokal GitHub Pages */
+function getImageUrl(namaFile) {
+  if (!namaFile) return '';
+  return `./img/${namaFile}`;
 }
 
-/** Fisher-Yates shuffle — tidak mengubah array asli */
 function fisherYates(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -1404,14 +1349,12 @@ function fisherYates(arr) {
   return a;
 }
 
-/** Bangun kamus ID_Gambar → objek Gambar untuk lookup O(1) */
 function buildKamus(gambarArr) {
   const kamus = {};
   (gambarArr || []).forEach(g => { kamus[g.ID_Gambar] = g; });
   return kamus;
 }
 
-/** Parse array Pengaturan → objek config */
 function parseConfig(arr) {
   const cfg = { poin: 10, campuran: 15 };
   (arr || []).forEach(row => {
@@ -1421,21 +1364,14 @@ function parseConfig(arr) {
   return cfg;
 }
 
-/** Cek Status_Akses = "Buka"; default TUTUP jika data tidak valid */
 function checkAccess(pengaturanArr) {
   if (!Array.isArray(pengaturanArr) || pengaturanArr.length === 0) return false;
   const row = pengaturanArr.find(r => r.Parameter === 'Status_Akses');
   return row ? row.Nilai === 'Buka' : false;
 }
 
-/** Sanitasi string untuk atribut HTML */
 function escapeHtml(str) {
-  return String(str || '')
-    .replace(/&/g,  '&amp;')
-    .replace(/"/g,  '&quot;')
-    .replace(/'/g,  '&#39;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;');
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
 </body>
