@@ -536,6 +536,12 @@
       border-radius: var(--r); border-left: 4px solid var(--hijau); margin-bottom: 22px;
     }
     .hasil-actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn-keluar {
+      background: var(--merah-light); color: var(--merah); border: 2.5px solid #EF9A9A; margin-top: 24px;
+    }
+.btn-keluar:active:not(:disabled) {
+  background: #FFCDD2;
+    }
   </style>
 </head>
 
@@ -608,7 +614,10 @@
       <div class="menu-grid">
         <button class="menu-card mc-materi" onclick="showScreen('s-materi')">
           <div class="card-icon">📖</div>
-          <div>
+          </div> <button class="btn-solid btn-keluar" onclick="keluarKeLogin()">
+      🔄 Ganti Nama Pemain
+    </button>
+</div>
             <div class="card-label">Materi Belajar</div>
             <div class="card-desc">Baca flashcard</div>
           </div>
@@ -919,7 +928,12 @@ function lanjutKeMenu() {
   renderKatGrid();
   showScreen('s-menu');
 }
-
+  
+function keluarKeLogin() {
+  APP.peserta = '';
+  document.getElementById('sel-nama').value = '';
+  showScreen('s-login');
+}
 /* ============================================================
    6. MATERI — PILIH KATEGORI & FLASHCARD
    ============================================================ */
