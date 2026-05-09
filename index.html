@@ -898,11 +898,16 @@ function renderSoal() {
   document.getElementById('prog-counter').textContent = `${APP.soalIdx + 1}/${total}`;
 
   renderKontenSoal(soal);
-  const opsiArr = buatOpsi(soal);
-  APP.jawabanId = soal.Jawaban_Benar;
+    const opsiArr = buatOpsi(soal);
+    const kunciSesuai = opsiArr.find(o => 
+    String(o.ID_Gambar).trim().toLowerCase() === String(soal.Jawaban_Benar).trim().toLowerCase() ||
+    String(o.Keterangan).trim().toLowerCase() === String(soal.Jawaban_Benar).trim().toLowerCase()
+  );
+    APP.jawabanId = kunciSesuai ? kunciSesuai.ID_Gambar : soal.Jawaban_Benar;
+
   renderOpsi(opsiArr, soal.Tipe_Opsi);
 }
-
+  
 function renderKontenSoal(soal) {
   const box = document.getElementById('soal-box');
   if (soal.Tipe_Input === 'Gambar') {
@@ -974,7 +979,9 @@ function onOpsiImgError(id, keterangan) {
 
 function cekJawaban(pilihanId) {
   document.querySelectorAll('.opsi-btn').forEach(b => b.disabled = true);
-  const benar = (pilihanId === APP.jawabanId);
+  const p = String(pilihanId).trim().toLowerCase();
+  const j = String(APP.jawabanId).trim().toLowerCase();
+  const benar = (p === j);
 
   if (benar) {
     APP.skor += APP.config.poin;
@@ -990,7 +997,7 @@ function cekJawaban(pilihanId) {
     if (APP.soalIdx < APP.soalList.length) { renderSoal(); } else { selesaiKuis(); }
   }, 1200);
 }
-
+  
 function tampilFeedback(tipe) {
   const el   = document.getElementById('feedback');
   const icon = document.getElementById('fb-icon');
@@ -1019,48 +1026,50 @@ function keluarKuis() { sembunyikanFeedback(); showScreen('s-pilih'); }
    B. Teks langsung (misal "Nderek Langkung") → fallback pseudo-object
    ============================================================ */
 function buatOpsi(soal) {
-  const jawabanRef = soal.Jawaban_Benar;
-  const kategori   = soal.Kategori_Uji;
+  const jawabanRef = String(soal.Jawaban_Benar).trim().toLowerCase();
+  const kategori   = String(soal.Kategori_Uji).trim().toLowerCase();
   const allGambar  = APP.rawData.Gambar || [];
 
-  // Cari jawaban benar di sheet Gambar (by ID atau Keterangan)
+  // 1. Cari objek jawaban benar
   let jawabanObj = allGambar.find(g =>
-    g.ID_Gambar === jawabanRef || g.Keterangan === jawabanRef
+    String(g.ID_Gambar).trim().toLowerCase() === jawabanRef ||
+    String(g.Keterangan).trim().toLowerCase() === jawabanRef
   );
 
-  // Fallback: Jawaban_Benar diisi teks langsung → buat objek pseudo
   if (!jawabanObj) {
-    jawabanObj = {
-      ID_Gambar  : jawabanRef,
-      Nama_File  : '',
-      Kategori   : kategori,
-      Keterangan : jawabanRef
-    };
+    jawabanObj = { ID_Gambar: soal.Jawaban_Benar, Keterangan: soal.Jawaban_Benar, Nama_File: '', Kategori: soal.Kategori_Uji };
   }
 
-  // Pool pengecoh: kategori sama, bukan jawaban benar
+  // 2. Pool pengecoh (Normalisasi kategori agar tidak meleset)
   let pool = allGambar.filter(g =>
-    g.Kategori   === kategori   &&
-    g.ID_Gambar  !== jawabanRef &&
-    g.Keterangan !== jawabanRef
+    String(g.Kategori).trim().toLowerCase() === kategori &&
+    String(g.ID_Gambar).trim().toLowerCase() !== jawabanRef &&
+    String(g.Keterangan).trim().toLowerCase() !== jawabanRef
   );
 
-  // Fallback lintas kategori jika pool kurang dari 3
+  // 3. SAFE FALLBACK: Jika kurang dari 3, ambil dari kategori yang RELEVAN saja
   if (pool.length < 3) {
-    const tambahan = fisherYates(
-      allGambar.filter(g =>
-        g.Kategori  !== kategori   &&
-        g.ID_Gambar !== jawabanRef &&
-        g.Keterangan !== jawabanRef
-      )
+    let kategoriRelevan = [];
+    if (kategori.includes('tokoh') || kategori.includes('pahlawan')) {
+      kategoriRelevan = ['pahlawan', 'tebak tokoh'];
+    } else if (kategori.includes('sumbu')) {
+      kategoriRelevan = ['sumbu filosofi', 'tebak sumbu'];
+    }
+
+    const tambahan = allGambar.filter(g =>
+      kategoriRelevan.includes(String(g.Kategori).trim().toLowerCase()) &&
+      String(g.ID_Gambar).trim().toLowerCase() !== jawabanRef &&
+      String(g.Keterangan).trim().toLowerCase() !== jawabanRef
     );
-    pool = [...pool, ...tambahan];
+    
+    // Gabungkan dan hapus duplikat jika ada
+    pool = [...new Set([...pool, ...tambahan])];
   }
 
   const pengecoh = fisherYates(pool).slice(0, 3);
   return fisherYates([jawabanObj, ...pengecoh]);
 }
-
+  
 /* ============================================================
    12. HASIL AKHIR
    ============================================================ */
