@@ -1,513 +1,1435 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pesta Siaga SD Negeri 1 Godegan</title>
-    <style>
-        :root {
-            --emerald-900: #064e3b;
-            --emerald-700: #047857;
-            --emerald-500: #10b981;
-            --emerald-100: #d1fae5;
-            --emerald-50: #ecfdf5;
-            --bg-color: #f3f4f6;
-            --text-dark: #1f2937;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Simulasi Pesta Siaga — SDN 1 Godegan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — Palet Warna Pramuka
+       ============================================================ */
+    :root {
+      --hijau       : #1B5E20;
+      --hijau-mid   : #2E7D32;
+      --hijau-light : #E8F5E9;
+      --hijau-border: #A5D6A7;
+      --kuning      : #F9A825;
+      --kuning-dark : #F57F17;
+      --cokelat     : #4E342E;
+      --bg          : #F0F7F0;
+      --white       : #FFFFFF;
+      --merah       : #B71C1C;
+      --merah-light : #FFEBEE;
+      --biru        : #0D47A1;
+      --ungu        : #6A1B9A;
+      --oranye      : #BF360C;
+      --text        : #1A2E1A;
+      --text-mid    : #4A6A4A;
+      --r           : 16px;
+      --r-lg        : 24px;
+      --shadow      : 0 4px 16px rgba(0,0,0,0.07);
+      --shadow-lg   : 0 8px 28px rgba(0,0,0,0.11);
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            user-select: none; /* Anti-copy */
-            -webkit-user-select: none;
-        }
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overscroll-behavior: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    img { display: block; max-width: 100%; }
+    button { font-family: 'Nunito', sans-serif; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
+    /* ============================================================
+       APP CONTAINER
+       ============================================================ */
+    #app {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--bg);
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        /* Mobile App Container */
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            background-color: #ffffff;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-        }
+    /* ============================================================
+       SCREEN MANAGEMENT
+       ============================================================ */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; animation: screenIn 0.22s ease-out; }
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Screen Management */
-        .screen {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.3s ease-in-out;
-            min-height: 100vh;
-        }
-        .screen.active {
-            display: block;
-        }
+    /* ============================================================
+       SHARED: TOP BAR
+       ============================================================ */
+    .top-bar {
+      display: flex; align-items: center;
+      padding: 14px 18px; gap: 12px;
+      background: var(--white);
+      border-bottom: 2px solid var(--hijau-light);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .btn-back {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--hijau-light); border: none;
+      font-size: 18px; color: var(--hijau); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s;
+    }
+    .btn-back:active { background: var(--hijau-border); }
+    .bar-title { font-size: 17px; font-weight: 800; color: var(--hijau); flex: 1; }
+    .bar-extra { font-size: 13px; font-weight: 700; color: var(--text-mid); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* ============================================================
+       SHARED: BUTTONS
+       ============================================================ */
+    .btn-solid {
+      width: 100%; padding: 15px; border: none;
+      border-radius: var(--r); font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      transition: transform 0.12s, opacity 0.12s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-solid:active:not(:disabled) { transform: scale(0.97); opacity: 0.9; }
+    .btn-solid:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--hijau); color: var(--white); }
+    .btn-kuning  { background: var(--kuning); color: var(--cokelat); }
+    .btn-outline { background: transparent; color: var(--hijau); border: 2.5px solid var(--hijau-border); }
 
-        /* Typography & Headers */
-        h1, h2, h3 { color: var(--emerald-900); }
-        .header-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 5px;
-            line-height: 1.2;
-        }
-        .slogan {
-            text-align: center;
-            font-size: 14px;
-            color: var(--emerald-700);
-            font-weight: 700;
-            margin-bottom: 25px;
-            background: var(--emerald-100);
-            padding: 8px;
-            border-radius: 8px;
-        }
+    /* ============================================================
+       SCREEN: LOADING / SPLASH
+       ============================================================ */
+    #s-loading {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--hijau); color: var(--white); gap: 18px;
+    }
+    .splash-logo { font-size: 72px; animation: pulse 2s ease-in-out infinite; }
+    .splash-title { font-size: 22px; font-weight: 900; text-align: center; line-height: 1.2; }
+    .splash-sub   { font-size: 13px; opacity: 0.75; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid rgba(255,255,255,0.25);
+      border-top-color: var(--kuning);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin  { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
 
-        /* Login Screen */
-        .login-wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
-            text-align: center;
-        }
-        .logo-pramuka {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-        select.input-name {
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid var(--emerald-500);
-            border-radius: var(--radius-lg);
-            margin-bottom: 20px;
-            background-color: var(--emerald-50);
-            color: var(--text-dark);
-            font-weight: bold;
-            outline: none;
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: var(--emerald-600);
-            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
-            border: none;
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
-            transition: transform 0.1s;
-        }
-        .btn-primary:active { transform: scale(0.98); }
+    /* ============================================================
+       SCREEN: AKSES DITUTUP
+       ============================================================ */
+    #s-tutup {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 40px 28px;
+      background: var(--hijau); color: var(--white); gap: 14px;
+      min-height: 100vh;
+    }
+    #s-tutup .tutup-icon { font-size: 72px; }
+    #s-tutup h2 { font-size: 24px; font-weight: 900; }
+    #s-tutup p  { font-size: 15px; opacity: 0.8; line-height: 1.7; max-width: 300px; }
+    .tutup-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      padding: 8px 20px; border-radius: 99px;
+      font-size: 13px; font-weight: 700;
+    }
 
-        /* Bento Grid Layouts */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .bento-item {
-            background-color: var(--emerald-50);
-            border: 2px solid var(--emerald-100);
-            border-radius: var(--radius-xl);
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .bento-item.large {
-            grid-column: span 2;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
-            color: white;
-            border: none;
-            box-shadow: 0 8px 15px rgba(4, 120, 87, 0.2);
-        }
-        .bento-item.large .bento-title { color: white; font-size: 20px; }
-        .bento-item.large .bento-icon { font-size: 40px; color: white; }
-        
-        .bento-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: var(--emerald-700);
-        }
-        .bento-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--emerald-900);
-        }
+    /* ============================================================
+       SCREEN: LOGIN
+       ============================================================ */
+    #s-login { background: var(--hijau); }
 
-        /* Top Navigation Bar */
-        .top-nav {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .btn-back {
-            background: var(--emerald-100);
-            border: none;
-            color: var(--emerald-900);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-        }
-        .nav-title { font-size: 18px; font-weight: bold; color: var(--emerald-900); }
+    .login-hero {
+      padding: 52px 24px 36px; text-align: center;
+      background:
+        repeating-linear-gradient(45deg,
+          transparent, transparent 18px,
+          rgba(255,255,255,0.025) 18px,
+          rgba(255,255,255,0.025) 19px),
+        var(--hijau);
+    }
+    .login-logo  { font-size: 68px; margin-bottom: 14px; }
+    .login-title { color: var(--white); font-size: 28px; font-weight: 900; line-height: 1.15; }
+    .login-sekolah {
+      color: var(--kuning); font-size: 13px; font-weight: 700;
+      margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px;
+    }
+    .login-slogan {
+      display: inline-block; margin-top: 16px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9);
+      font-size: 12px; font-weight: 700;
+      padding: 7px 18px; border-radius: 99px; letter-spacing: 0.3px;
+    }
 
-        /* Quiz Arena */
-        .question-box {
-            background: white;
-            border: 3px solid var(--emerald-500);
-            border-radius: var(--radius-xl);
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        .option-btn {
-            background: var(--emerald-50);
-            border: 2px solid var(--emerald-100);
-            padding: 15px;
-            border-radius: var(--radius-lg);
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--emerald-900);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .option-btn:active { background: var(--emerald-100); transform: scale(0.95); }
+    .login-card {
+      background: var(--white);
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      padding: 30px 24px 44px; margin-top: -1px;
+    }
+    .login-card label {
+      display: block; font-size: 12px; font-weight: 800;
+      color: var(--text-mid); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 10px;
+    }
+    .select-nama {
+      width: 100%; padding: 14px 40px 14px 16px;
+      font-family: 'Nunito', sans-serif; font-size: 16px;
+      font-weight: 700; color: var(--text);
+      background: var(--hijau-light);
+      border: 2.5px solid var(--hijau-border);
+      border-radius: var(--r); appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231B5E20' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      cursor: pointer; transition: border-color 0.2s; outline: none; margin-bottom: 20px;
+    }
+    .select-nama:focus { border-color: var(--hijau); background: var(--white); }
 
-        /* Feedback Overlays */
-        .feedback-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-        .feedback-overlay.show { opacity: 1; pointer-events: all; }
-        .feedback-icon { font-size: 100px; }
-        .feedback-correct { color: var(--success); animation: bounce 0.5s; }
-        .feedback-wrong { color: var(--danger); animation: shake 0.5s; }
+    .login-error {
+      background: var(--merah-light); border: 2px solid #EF9A9A;
+      border-radius: var(--r); padding: 12px 16px;
+      font-size: 13px; color: var(--merah); font-weight: 700;
+      text-align: center; margin-bottom: 16px; display: none;
+    }
+    .login-error.show { display: block; }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-30px); }
-            60% { transform: translateY(-15px); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
-    </style>
+    /* ============================================================
+       SCREEN: MENU UTAMA
+       ============================================================ */
+    #s-menu { background: var(--bg); }
+
+    .menu-header {
+      padding: 28px 22px 24px;
+      background:
+        repeating-linear-gradient(135deg,
+          transparent, transparent 20px,
+          rgba(255,255,255,0.025) 20px,
+          rgba(255,255,255,0.025) 21px),
+        var(--hijau);
+    }
+    .menu-sapa  { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 600; }
+    .menu-nama  { color: var(--white); font-size: 26px; font-weight: 900; line-height: 1.1; }
+    .menu-nama span { color: var(--kuning); }
+    .menu-tagline { color: rgba(255,255,255,0.65); font-size: 13px; margin-top: 3px; }
+
+    .menu-body { padding: 18px 16px 24px; }
+
+    .sec-title {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-mid); margin-bottom: 12px; padding-left: 2px;
+    }
+
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .menu-card {
+      border-radius: var(--r-lg); padding: 20px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      cursor: pointer; border: none; text-align: left;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .menu-card::after {
+      content: ''; position: absolute; right: -16px; bottom: -16px;
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+    }
+    .menu-card:active { transform: scale(0.97); box-shadow: var(--shadow); }
+    .menu-card.wide { grid-column: span 2; flex-direction: row; align-items: center; padding: 18px 20px; }
+    .menu-card.wide .card-text { flex: 1; }
+
+    .mc-materi   { background: var(--white); }
+    .mc-kuis     { background: var(--kuning); }
+    .mc-log      { background: var(--hijau-light); }
+
+    .card-icon  { font-size: 38px; }
+    .menu-card.wide .card-icon { font-size: 44px; }
+    .card-label { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .mc-kuis .card-label { color: var(--cokelat); }
+    .card-desc  { font-size: 12px; color: var(--text-mid); font-weight: 600; }
+    .mc-kuis .card-desc { color: rgba(78,52,46,0.75); }
+    .card-arrow { font-size: 22px; color: var(--hijau); margin-left: auto; }
+    .mc-kuis .card-arrow { color: var(--cokelat); }
+
+    /* ============================================================
+       SCREEN: MATERI — PILIH KATEGORI
+       ============================================================ */
+    .screen-body { padding: 16px; }
+
+    .kat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .kat-card {
+      border-radius: var(--r); padding: 20px 12px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 10px; cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: transform 0.15s, border-color 0.2s;
+      box-shadow: var(--shadow); background: var(--white);
+    }
+    .kat-card:active { transform: scale(0.96); }
+    .kat-icon  { font-size: 40px; }
+    .kat-nama  { font-size: 13px; font-weight: 800; color: var(--text); }
+    .kat-count { font-size: 11px; font-weight: 600; color: var(--text-mid); }
+
+    .kc-pahlawan  { background: #FFF8E1; } .kc-pahlawan:active  { border-color: var(--kuning); }
+    .kc-sumbu     { background: #E8F5E9; } .kc-sumbu:active     { border-color: var(--hijau-mid); }
+    .kc-siapa     { background: #E3F2FD; } .kc-siapa:active     { border-color: var(--biru); }
+    .kc-unggah    { background: #FBE9E7; } .kc-unggah:active    { border-color: var(--oranye); }
+    .kc-toleransi { background: #F3E5F5; } .kc-toleransi:active { border-color: var(--ungu); }
+
+    .kat-empty {
+      grid-column: span 2; text-align: center;
+      padding: 32px; color: var(--text-mid);
+      font-size: 14px; font-weight: 600;
+    }
+
+    /* ============================================================
+       SCREEN: FLASHCARD
+       ============================================================ */
+    #s-kartu .screen-body { padding: 14px 16px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+    .kartu-info {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .kartu-counter { font-size: 13px; font-weight: 800; color: var(--text-mid); }
+    .kartu-badge {
+      font-size: 11px; font-weight: 800; background: var(--hijau-light);
+      color: var(--hijau); padding: 4px 12px; border-radius: 99px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .flashcard {
+      background: var(--white); border-radius: var(--r-lg);
+      border: 2.5px solid var(--hijau-border);
+      overflow: hidden; box-shadow: var(--shadow-lg);
+      cursor: grab; touch-action: pan-y;
+      transition: transform 0.1s;
+    }
+    .flashcard.swiping { cursor: grabbing; transition: none; }
+
+    .kartu-img-area {
+      background: var(--hijau-light);
+      min-height: 200px; display: flex;
+      align-items: center; justify-content: center; overflow: hidden;
+    }
+    .kartu-img-area img {
+      width: 100%; max-height: 260px; object-fit: contain;
+    }
+    .kartu-no-img { font-size: 60px; opacity: 0.3; }
+
+    .kartu-body { padding: 18px 20px 20px; border-top: 2px solid var(--hijau-light); }
+    .kartu-judul {
+      font-size: 18px; font-weight: 900; color: var(--hijau); margin-bottom: 8px;
+    }
+    .kartu-penjelasan { font-size: 14px; line-height: 1.7; color: var(--text-mid); }
+
+    .kartu-nav { display: flex; align-items: center; gap: 12px; }
+    .btn-nav {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2.5px solid var(--hijau-border); background: var(--white);
+      font-size: 20px; color: var(--hijau); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .btn-nav:disabled { opacity: 0.28; cursor: not-allowed; }
+    .btn-nav:not(:disabled):active { background: var(--hijau-light); }
+
+    .dots { display: flex; gap: 6px; align-items: center; justify-content: center; flex: 1; flex-wrap: wrap; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--hijau-border); transition: all 0.25s; flex-shrink: 0;
+    }
+    .dot.active { width: 22px; border-radius: 4px; background: var(--hijau); }
+
+    /* ============================================================
+       SCREEN: PILIH TANTANGAN (KUIS)
+       ============================================================ */
+    .tantangan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .t-card {
+      border-radius: var(--r); padding: 18px 12px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 8px; cursor: pointer; border: none;
+      transition: transform 0.15s; box-shadow: var(--shadow);
+    }
+    .t-card:active { transform: scale(0.96); }
+    .t-card.wide { grid-column: span 2; flex-direction: row; padding: 16px 20px; align-items: center; gap: 14px; }
+    .t-card.wide .t-text { flex: 1; text-align: left; }
+
+    .t-icon  { font-size: 34px; }
+    .t-card.wide .t-icon { font-size: 42px; flex-shrink: 0; }
+    .t-label { font-size: 13px; font-weight: 800; line-height: 1.2; }
+    .t-hint  { font-size: 11px; font-weight: 600; opacity: 0.7; }
+
+    .tc-pahlawan  { background: #FFF8E1; color: var(--cokelat); }
+    .tc-sumbu     { background: #E8F5E9; color: var(--hijau); }
+    .tc-siapa     { background: #E3F2FD; color: var(--biru); }
+    .tc-unggah    { background: #FBE9E7; color: var(--oranye); }
+    .tc-toleransi { background: #F3E5F5; color: var(--ungu); }
+    .tc-semua     { background: var(--hijau); color: var(--white); }
+    .tc-semua .t-hint { opacity: 0.8; }
+
+    /* ============================================================
+       SCREEN: ARENA KUIS
+       ============================================================ */
+    #s-kuis { background: var(--bg); }
+
+    .kuis-header {
+      background: var(--white); padding: 12px 16px 0;
+      border-bottom: 2px solid var(--hijau-light);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .kuis-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .kuis-judul-txt { font-size: 14px; font-weight: 800; color: var(--hijau); }
+    .skor-chip {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--hijau-light); padding: 5px 12px; border-radius: 99px;
+    }
+    .skor-lbl { font-size: 11px; color: var(--text-mid); font-weight: 700; }
+    .skor-val { font-size: 16px; font-weight: 900; color: var(--hijau); }
+    .kuis-prog-row {
+      display: flex; align-items: center; gap: 10px; padding-bottom: 12px;
+    }
+    .prog-bg { flex: 1; height: 6px; background: var(--hijau-light); border-radius: 3px; overflow: hidden; }
+    .prog-fill {
+      height: 100%; background: var(--hijau);
+      border-radius: 3px; width: 0%;
+      transition: width 0.4s ease;
+    }
+    .prog-counter { font-size: 11px; font-weight: 800; color: var(--text-mid); white-space: nowrap; }
+
+    .kuis-body { padding: 14px 16px 24px; }
+
+    /* Kotak soal */
+    .soal-box {
+      background: var(--white); border-radius: var(--r);
+      border: 2.5px solid var(--hijau-border);
+      overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow);
+    }
+    .soal-teks-wrap { padding: 20px; text-align: center; }
+    .soal-teks { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.65; }
+
+    .soal-gambar-wrap { background: var(--hijau-light); display: flex; flex-direction: column; align-items: center; }
+    .soal-gambar { width: 100%; max-height: 230px; object-fit: contain; }
+    .soal-hint { padding: 10px 16px; font-size: 14px; font-weight: 700; color: var(--text-mid); text-align: center; }
+
+    /* Opsi jawaban */
+    .opsi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .opsi-btn {
+      border-radius: var(--r); border: 2.5px solid var(--hijau-light);
+      background: var(--white); padding: 10px; cursor: pointer;
+      transition: all 0.15s; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 7px;
+      min-height: 88px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .opsi-btn:active:not(:disabled) { background: var(--hijau-light); transform: scale(0.97); }
+    .opsi-btn:disabled { cursor: not-allowed; }
+    .opsi-btn.benar { border-color: var(--hijau); background: var(--hijau-light); }
+    .opsi-btn.salah { border-color: var(--merah); background: var(--merah-light); }
+
+    .opsi-img { width: 100%; height: 76px; object-fit: contain; border-radius: 8px; background: var(--hijau-light); }
+    .opsi-lbl-gambar { font-size: 11px; font-weight: 700; color: var(--text-mid); text-align: center; line-height: 1.3; }
+    .opsi-lbl-teks { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.45; padding: 4px; }
+
+    /* Skeleton loading opsi gambar */
+    .opsi-skeleton {
+      width: 100%; height: 76px; border-radius: 8px;
+      background: linear-gradient(90deg, var(--hijau-light) 25%, #d4ebd6 50%, var(--hijau-light) 75%);
+      background-size: 200% 100%; animation: shimmer 1.2s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ============================================================
+       FEEDBACK OVERLAY
+       ============================================================ */
+    #feedback {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    }
+    #feedback.show { opacity: 1; pointer-events: all; }
+    #feedback.benar { background: rgba(27, 94, 32, 0.9); }
+    #feedback.salah { background: rgba(183, 28, 28, 0.9); }
+    .fb-icon { font-size: 110px; }
+    #feedback.show.benar .fb-icon { animation: bounceIn 0.45s ease-out; }
+    #feedback.show.salah .fb-icon { animation: shakeIt 0.45s ease-out; }
+
+    @keyframes bounceIn {
+      0%   { transform: scale(0.2); opacity: 0; }
+      55%  { transform: scale(1.2); }
+      80%  { transform: scale(0.92); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shakeIt {
+      0%, 100% { transform: translateX(0); }
+      15%, 45%, 75% { transform: translateX(-16px); }
+      30%, 60%, 90% { transform: translateX(16px); }
+    }
+
+    /* ============================================================
+       SCREEN: HASIL AKHIR
+       ============================================================ */
+    #s-hasil { background: var(--hijau); }
+
+    .hasil-hero {
+      padding: 44px 24px 36px; text-align: center;
+      background:
+        repeating-linear-gradient(45deg,
+          transparent, transparent 18px,
+          rgba(255,255,255,0.03) 18px,
+          rgba(255,255,255,0.03) 19px),
+        var(--hijau);
+    }
+    .hasil-trofi  { font-size: 68px; margin-bottom: 10px; }
+    .hasil-nama-txt { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .hasil-skor-num { color: var(--kuning); font-size: 76px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+    .hasil-skor-lbl { color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 600; margin-top: 4px; }
+    .hasil-bintang  { font-size: 38px; margin-top: 14px; letter-spacing: 4px; }
+
+    .hasil-card {
+      background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0;
+      padding: 28px 22px 48px; margin-top: -1px;
+    }
+    .hasil-kat {
+      font-size: 11px; text-align: center; color: var(--text-mid);
+      font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
+    }
+    .hasil-pesan {
+      font-size: 15px; font-weight: 700; color: var(--text); text-align: center;
+      line-height: 1.65; padding: 14px 16px; background: var(--hijau-light);
+      border-radius: var(--r); border-left: 4px solid var(--hijau); margin-bottom: 22px;
+    }
+    .hasil-actions { display: flex; flex-direction: column; gap: 10px; }
+  </style>
 </head>
-<body oncontextmenu="return false;"> <div class="app-container" id="app">
-    
-    <div id="screen-login" class="screen active">
-        <div class="login-wrapper">
-            <div class="logo-pramuka">⚜️</div>
-            <div class="header-title">PESTA SIAGA<br>SD NEGERI 1 GODEGAN</div>
-            <div class="slogan">TERUS BELAJAR PASTI KITA BISA JUARA!</div>
-            
-            <select id="namaPeserta" class="input-name">
-                <option value="" disabled selected>-- Pilih Nama Kamu --</option>
-                <optgroup label="Barung Putra">
-                    <option value="Zaffa">Zaffa</option>
-                    <option value="Azzam">Azzam</option>
-                    <option value="Naja">Naja</option>
-                    <option value="Risqi">Risqi</option>
-                    <option value="Reyvan">Reyvan</option>
-                    <option value="Rakha">Rakha</option>
-                </optgroup>
-                <optgroup label="Barung Putri">
-                    <option value="Alesha">Alesha</option>
-                    <option value="Anindya">Anindya</option>
-                    <option value="Adinda">Adinda</option>
-                    <option value="Nafisah">Nafisah</option>
-                    <option value="Nanda">Nanda</option>
-                    <option value="Shafeea">Shafeea</option>
-                </optgroup>
-            </select>
 
-            <button class="btn-primary" onclick="masukAplikasi()">Mulai Bermain 🚀</button>
-        </div>
+<body oncontextmenu="return false">
+<div id="app">
+
+  <!-- ========== SCREEN: LOADING ========== -->
+  <div id="s-loading" class="screen active">
+    <div class="splash-logo">⚜️</div>
+    <div class="splash-title">SIMULASI<br>PESTA SIAGA</div>
+    <div class="spinner"></div>
+    <div class="splash-sub">Memuat data dari server...</div>
+  </div>
+
+  <!-- ========== SCREEN: AKSES DITUTUP ========== -->
+  <div id="s-tutup" class="screen">
+    <div class="tutup-icon">🔒</div>
+    <h2>Akses Ditutup</h2>
+    <p>Latihan sedang tidak tersedia.<br>Hubungi Pembina atau tunggu waktu yang ditentukan.</p>
+    <div class="tutup-badge">⚜️ SDN 1 Godegan — Pramuka Siaga</div>
+  </div>
+
+  <!-- ========== SCREEN: LOGIN ========== -->
+  <div id="s-login" class="screen">
+    <div class="login-hero">
+      <div class="login-logo">⚜️</div>
+      <div class="login-title">PESTA SIAGA<br>KWARCAB BANTUL</div>
+      <div class="login-sekolah">SD Negeri 1 Godegan</div>
+      <div class="login-slogan">Terus Belajar, Pasti Bisa Juara! 🏆</div>
     </div>
 
-    <div id="screen-menu" class="screen">
-        <div class="header-title" style="text-align: left; margin-top: 10px;">Halo, <span id="displayNama">Siswa</span>! 👋</div>
-        <div class="slogan" style="text-align: left;">SD Negeri 1 Godegan Bisa!</div>
+    <div class="login-card">
+      <label for="sel-nama">Pilih Nama Kamu</label>
+      <div class="login-error" id="login-error">Pilih namamu dulu sebelum masuk! 👇</div>
+      <select class="select-nama" id="sel-nama">
+        <option value="" disabled selected>-- Nama Saya --</option>
+        <optgroup label="🟦 Barung Putra">
+          <option>Zaffa</option>
+          <option>Azzam</option>
+          <option>Naja</option>
+          <option>Risqi</option>
+          <option>Reyvan</option>
+          <option>Rakha</option>
+        </optgroup>
+        <optgroup label="🟥 Barung Putri">
+          <option>Alesha</option>
+          <option>Anindya</option>
+          <option>Adinda</option>
+          <option>Nafisah</option>
+          <option>Nanda</option>
+          <option>Shafeea</option>
+        </optgroup>
+      </select>
+      <button class="btn-solid btn-primary" onclick="handleLogin()">Mulai Bermain 🚀</button>
+    </div>
+  </div>
 
-        <div class="bento-grid">
-            <div class="bento-item large" onclick="bukaLayar('screen-materi')">
-                <div class="bento-icon">📖</div>
-                <div class="bento-title">Materi Belajar</div>
-                <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Baca Flashcard Disini</div>
-            </div>
-            
-            <div class="bento-item large" onclick="bukaLayar('screen-kategori-uji')" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                <div class="bento-icon">🎯</div>
-                <div class="bento-title">Uji Diri</div>
-                <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Mulai Simulasi Kuis</div>
-            </div>
+  <!-- ========== SCREEN: MENU UTAMA ========== -->
+  <div id="s-menu" class="screen">
+    <div class="menu-header">
+      <div class="menu-sapa">Selamat datang,</div>
+      <div class="menu-nama">Hai, <span id="disp-nama">Siswa</span>! 👋</div>
+      <div class="menu-tagline">SDN 1 Godegan Bisa! ⚜️</div>
+    </div>
+    <div class="menu-body">
+      <div class="sec-title">Mau ngapain dulu?</div>
+      <div class="menu-grid">
+        <button class="menu-card mc-materi" onclick="showScreen('s-materi')">
+          <div class="card-icon">📖</div>
+          <div>
+            <div class="card-label">Materi Belajar</div>
+            <div class="card-desc">Baca flashcard</div>
+          </div>
+        </button>
+        <button class="menu-card mc-kuis" onclick="showScreen('s-pilih')">
+          <div class="card-icon">🎯</div>
+          <div>
+            <div class="card-label">Uji Diri</div>
+            <div class="card-desc">Mulai kuis!</div>
+          </div>
+        </button>
+        <button class="menu-card mc-log wide" onclick="showScreen('s-pilih')">
+          <div class="card-icon">🏆</div>
+          <div class="card-text">
+            <div class="card-label">Uji Semua Materi</div>
+            <div class="card-desc">Campuran semua kategori lomba</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: MATERI — PILIH KATEGORI ========== -->
+  <div id="s-materi" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" onclick="showScreen('s-menu')">←</button>
+      <div class="bar-title">Materi Belajar</div>
+    </div>
+    <div class="screen-body">
+      <div class="sec-title" style="margin-top:4px;">Pilih topik yang ingin dipelajari</div>
+      <div class="kat-grid" id="kat-grid">
+        <!-- Diisi oleh JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: FLASHCARD ========== -->
+  <div id="s-kartu" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" id="btn-back-kartu" onclick="showScreen('s-materi')">←</button>
+      <div class="bar-title" id="kartu-bar-title">Materi</div>
+      <div class="bar-extra" id="kartu-counter">1/1</div>
+    </div>
+    <div class="screen-body">
+      <div class="kartu-info">
+        <div class="kartu-badge" id="kartu-badge">Kategori</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text-mid)">Geser ← →</div>
+      </div>
+
+      <div class="flashcard" id="flashcard">
+        <div class="kartu-img-area" id="kartu-img-area">
+          <div class="kartu-no-img">📄</div>
         </div>
+        <div class="kartu-body">
+          <div class="kartu-judul" id="kartu-judul">Judul</div>
+          <div class="kartu-penjelasan" id="kartu-penjelasan">Penjelasan materi akan ditampilkan di sini.</div>
+        </div>
+      </div>
+
+      <div class="kartu-nav">
+        <button class="btn-nav" id="btn-prev">‹</button>
+        <div class="dots" id="dots"></div>
+        <button class="btn-nav" id="btn-next">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: PILIH TANTANGAN ========== -->
+  <div id="s-pilih" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" onclick="showScreen('s-menu')">←</button>
+      <div class="bar-title">Pilih Tantangan</div>
+    </div>
+    <div class="screen-body">
+      <div class="sec-title" style="margin-top:4px;">Ada berapa soal di tiap kategori?</div>
+      <div class="tantangan-grid">
+        <button class="t-card tc-pahlawan" onclick="mulaiKuis('Pahlawan')">
+          <div class="t-icon">🦸</div>
+          <div><div class="t-label">Tebak Pahlawan</div><div class="t-hint" id="hint-pahlawan">— soal</div></div>
+        </button>
+        <button class="t-card tc-sumbu" onclick="mulaiKuis('Sumbu Filosofi')">
+          <div class="t-icon">🏛️</div>
+          <div><div class="t-label">Sumbu Filosofi</div><div class="t-hint" id="hint-sumbu">— soal</div></div>
+        </button>
+        <button class="t-card tc-siapa" onclick="mulaiKuis('Siapa Aku')">
+          <div class="t-icon">🖼️</div>
+          <div><div class="t-label">Siapa Aku?</div><div class="t-hint" id="hint-siapa">— soal</div></div>
+        </button>
+        <button class="t-card tc-unggah" onclick="mulaiKuis('Unggah-ungguh')">
+          <div class="t-icon">🙏</div>
+          <div><div class="t-label">Unggah-ungguh</div><div class="t-hint" id="hint-unggah">— soal</div></div>
+        </button>
+        <button class="t-card tc-toleransi" onclick="mulaiKuis('Toleransi')">
+          <div class="t-icon">🤝</div>
+          <div><div class="t-label">Toleransi</div><div class="t-hint" id="hint-toleransi">— soal</div></div>
+        </button>
+        <button class="t-card tc-semua wide" onclick="mulaiKuis('Uji Semua')">
+          <div class="t-icon">🏆</div>
+          <div class="t-text">
+            <div class="t-label">UJI SEMUA MATERI</div>
+            <div class="t-hint" id="hint-semua">Campuran semua kategori</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: ARENA KUIS ========== -->
+  <div id="s-kuis" class="screen">
+    <div class="kuis-header">
+      <div class="kuis-meta">
+        <button class="btn-back" style="width:32px;height:32px;font-size:16px" onclick="keluarKuis()">✕</button>
+        <div class="kuis-judul-txt" id="kuis-judul">Tantangan</div>
+        <div class="skor-chip">
+          <span class="skor-lbl">Skor</span>
+          <span class="skor-val" id="kuis-skor">0</span>
+        </div>
+      </div>
+      <div class="kuis-prog-row">
+        <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-counter" id="prog-counter">0/0</div>
+      </div>
     </div>
 
-    <div id="screen-kategori-uji" class="screen">
-        <div class="top-nav">
-            <button class="btn-back" onclick="bukaLayar('screen-menu')">←</button>
-            <div class="nav-title">Pilih Tantangan</div>
-        </div>
-        <div class="bento-grid">
-            <div class="bento-item" onclick="mulaiKuis('Pahlawan')">
-                <div class="bento-icon">🦸</div>
-                <div class="bento-title">Tebak Pahlawan</div>
-            </div>
-            <div class="bento-item" onclick="mulaiKuis('Sumbu Filosofi')">
-                <div class="bento-icon">🏛️</div>
-                <div class="bento-title">Sumbu Filosofi</div>
-            </div>
-            <div class="bento-item" onclick="mulaiKuis('Unggah-ungguh')">
-                <div class="bento-icon">🙏</div>
-                <div class="bento-title">Unggah-ungguh</div>
-            </div>
-            <div class="bento-item" onclick="mulaiKuis('Toleransi')">
-                <div class="bento-icon">🤝</div>
-                <div class="bento-title">Toleransi</div>
-            </div>
-            <div class="bento-item large" onclick="mulaiKuis('Uji Semua')" style="background: var(--emerald-900); color: white;">
-                <div class="bento-icon">🏆</div>
-                <div class="bento-title" style="color: white;">UJI SEMUA MATERI</div>
-            </div>
-        </div>
+    <div class="kuis-body">
+      <div class="soal-box" id="soal-box">
+        <!-- Diisi oleh JS berdasarkan Tipe_Input -->
+      </div>
+      <div class="opsi-grid" id="opsi-grid">
+        <!-- Diisi oleh JS berdasarkan Tipe_Opsi -->
+      </div>
     </div>
+  </div>
 
-    <div id="screen-kuis" class="screen">
-        <div class="top-nav">
-            <button class="btn-back" onclick="keluarKuis()">✖</button>
-            <div class="nav-title" id="judulKuis">Tantangan</div>
-            <div style="margin-left: auto; font-weight: bold; color: var(--emerald-700);">Skor: <span id="skorKuis">0</span></div>
-        </div>
-        
-        <div style="width: 100%; height: 8px; background: var(--emerald-100); border-radius: 4px; margin-bottom: 20px;">
-            <div id="progressBar" style="width: 0%; height: 100%; background: var(--emerald-500); border-radius: 4px; transition: width 0.3s;"></div>
-        </div>
-
-        <div class="question-box" id="teksSoal">Memuat soal...</div>
-        
-        <div class="options-grid" id="wadahOpsi">
-            </div>
+  <!-- ========== SCREEN: HASIL AKHIR ========== -->
+  <div id="s-hasil" class="screen">
+    <div class="hasil-hero">
+      <div class="hasil-trofi">🏅</div>
+      <div class="hasil-nama-txt" id="hasil-nama">Nama Peserta</div>
+      <div class="hasil-skor-num" id="hasil-skor">0</div>
+      <div class="hasil-skor-lbl">TOTAL SKOR</div>
+      <div class="hasil-bintang" id="hasil-bintang">⭐⭐⭐</div>
     </div>
-
-    <div id="feedback-overlay" class="feedback-overlay">
-        <div id="feedback-icon" class="feedback-icon"></div>
+    <div class="hasil-card">
+      <div class="hasil-kat" id="hasil-kat">Kategori</div>
+      <div class="hasil-pesan" id="hasil-pesan">Pesan semangat di sini.</div>
+      <div class="hasil-actions">
+        <button class="btn-solid btn-kuning" onclick="ulangiKuis()">🔄 Coba Lagi</button>
+        <button class="btn-solid btn-outline" onclick="showScreen('s-menu')">🏠 Menu Utama</button>
+      </div>
     </div>
+  </div>
 
+</div><!-- #app -->
+
+<!-- ========== FEEDBACK OVERLAY ========== -->
+<div id="feedback">
+  <div class="fb-icon" id="fb-icon">✅</div>
 </div>
 
+<!-- ============================================================
+     JAVASCRIPT — Semua fungsi terimplementasi
+     ============================================================ -->
 <script>
-    // Konfigurasi State Aplikasi
-    let state = {
-        peserta: '',
-        kategoriAktif: '',
-        skor: 0,
-        indeksSoal: 0,
-        soalTersedia: []
-    };
+'use strict';
 
-    // Placeholder Data Soal (Akan ditimpa oleh hasil fetch GAS nanti)
-    // Format distrukturkan agar mesin pengacak berfungsi optimal
-    const bankSoalLokal = [
-        { kategori: "Sumbu Filosofi", soal: "Bangunan bersejarah yang terletak paling selatan pada Sumbu Filosofi adalah?", opsi: ["Panggung Krapyak", "Tugu Pal Putih", "Kraton Jogja", "Gunung Merapi"], jawaban: "Panggung Krapyak" },
-        { kategori: "Pahlawan", soal: "Pahlawan asal DIY yang dijuluki Bapak Pendidikan Nasional adalah?", opsi: ["Ki Hajar Dewantara", "Pangeran Diponegoro", "KH Ahmad Dahlan", "Sri Sultan HB IX"], jawaban: "Ki Hajar Dewantara" },
-        { kategori: "Unggah-ungguh", soal: "Saat berjalan melewati bapak ibu guru, kita sebaiknya mengucapkan?", opsi: ["Nderek Langkung", "Nyuwun Sewu", "Matur Nuwun", "Mangga"], jawaban: "Nderek Langkung" },
-        { kategori: "Toleransi", soal: "Saat teman sebarungmu sedang sakit, apa yang harus kamu ucapkan?", opsi: ["Semoga lekas sembuh", "Selamat ya", "Biarin saja", "Terima kasih"], jawaban: "Semoga lekas sembuh" }
-    ];
+/* ============================================================
+   1. KONFIGURASI — GANTI URL DI BAWAH INI
+   ============================================================ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbySmZzWWRBI_izz0rtiWxi15VcNsgPJl0h4CUXYJRYPEi_iG0IC0ixMP9EB0PW3hSV2/exec';
 
-    // Fungsi Navigasi Dasar
-    function bukaLayar(idLayar) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(idLayar).classList.add('active');
+/* ============================================================
+   2. STATE APLIKASI
+   ============================================================ */
+const APP = {
+  // Identitas
+  peserta       : '',
+  // Data dari GAS
+  rawData       : null,   // { Gambar, Materi, Soal, Pengaturan }
+  kamus         : {},     // { ID_Gambar: { ID_Drive, Kategori, Keterangan } }
+  config        : { poin: 10, campuran: 15 },
+  // State Materi / Flashcard
+  kartuList     : [],
+  kartuIdx      : 0,
+  kartuKategori : '',
+  touchStartX   : 0,
+  touchStartY   : 0,
+  // State Kuis
+  kategori      : '',
+  soalList      : [],
+  soalIdx       : 0,
+  skor          : 0,
+  jawabanId     : ''   // ID_Gambar jawaban benar soal aktif
+};
+
+/* ============================================================
+   3. NAVIGASI
+   ============================================================ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+}
+
+/* ============================================================
+   4. INISIALISASI — Fetch data saat halaman dimuat
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', init);
+
+async function init() {
+  showScreen('s-loading');
+  // Jika URL belum dikonfigurasi, langsung tampilkan login tanpa fetch
+  if (!GAS_URL || GAS_URL.includes('GANTI')) {
+    console.warn('GAS_URL belum dikonfigurasi. Menampilkan login tanpa data.');
+    showScreen('s-login');
+    return;
+  }
+  try {
+    const json = await fetchData();
+    prosesDariGAS(json);
+  } catch (err) {
+    console.error('Gagal fetch awal:', err);
+    // Tetap tampilkan login; data akan di-fetch ulang saat masuk
+    showScreen('s-login');
+  }
+}
+
+async function fetchData() {
+  const res = await fetch(GAS_URL, { method: 'GET', mode: 'cors' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+/**
+ * Memproses respons JSON dari GAS.
+ * Menentukan apakah harus tampilkan tutup/login/menu.
+ */
+function prosesDariGAS(json) {
+  if (!json) { showScreen('s-login'); return; }
+
+  if (json.status === 'closed') { showScreen('s-tutup'); return; }
+
+  if (json.status === 'success' && json.data) {
+    APP.rawData = json.data;
+    APP.kamus   = buildKamus(json.data.Gambar);
+    APP.config  = parseConfig(json.data.Pengaturan);
+    // Data sudah siap, tampilkan login
+    showScreen('s-login');
+  } else {
+    console.error('Respons GAS tidak dikenal:', json);
+    showScreen('s-login');
+  }
+}
+
+/* ============================================================
+   5. LOGIN
+   ============================================================ */
+async function handleLogin() {
+  const nama  = document.getElementById('sel-nama').value;
+  const errEl = document.getElementById('login-error');
+
+  if (!nama) {
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+  APP.peserta = nama;
+
+  // Jika data belum ada (fetch awal gagal), fetch sekarang
+  if (!APP.rawData) {
+    showScreen('s-loading');
+    try {
+      const json = await fetchData();
+      if (json.status === 'closed') { showScreen('s-tutup'); return; }
+      if (json.status === 'success') {
+        APP.rawData = json.data;
+        APP.kamus   = buildKamus(json.data.Gambar);
+        APP.config  = parseConfig(json.data.Pengaturan);
+      } else {
+        alert('Gagal memuat data. Periksa koneksi internet.');
+        showScreen('s-login');
+        return;
+      }
+    } catch (err) {
+      alert('Tidak bisa terhubung ke server. Coba lagi.');
+      showScreen('s-login');
+      return;
+    }
+  }
+
+  // Cek status akses sekali lagi dari data terbaru
+  if (!checkAccess(APP.rawData.Pengaturan)) {
+    showScreen('s-tutup');
+    return;
+  }
+
+  document.getElementById('disp-nama').textContent = nama;
+  updateHintSoal();
+  renderKatGrid();
+  showScreen('s-menu');
+}
+
+/* ============================================================
+   6. MATERI — PILIH KATEGORI & FLASHCARD
+   ============================================================ */
+
+// Daftar kategori Materi dengan metadata tampilan
+const KATEGORI_MATERI = [
+  { id: 'Pahlawan',       icon: '🦸', kelas: 'kc-pahlawan'  },
+  { id: 'Sumbu Filosofi', icon: '🏛️', kelas: 'kc-sumbu'     },
+  { id: 'Siapa Aku',      icon: '🖼️', kelas: 'kc-siapa'     },
+  { id: 'Unggah-ungguh',  icon: '🙏', kelas: 'kc-unggah'    },
+  { id: 'Toleransi',      icon: '🤝', kelas: 'kc-toleransi' }
+];
+
+/** Merender grid kategori materi berdasarkan data yang tersedia */
+function renderKatGrid() {
+  const grid = document.getElementById('kat-grid');
+  if (!APP.rawData) { grid.innerHTML = '<div class="kat-empty">Data materi belum tersedia.</div>'; return; }
+
+  grid.innerHTML = '';
+  let adaKonten = false;
+
+  KATEGORI_MATERI.forEach(kat => {
+    const jumlah = (APP.rawData.Materi || []).filter(m => m.Kategori === kat.id).length;
+    if (jumlah === 0) return; // Sembunyikan kategori tanpa data
+    adaKonten = true;
+
+    const card = document.createElement('button');
+    card.className = `kat-card ${kat.kelas}`;
+    card.innerHTML = `
+      <div class="kat-icon">${kat.icon}</div>
+      <div class="kat-nama">${kat.id}</div>
+      <div class="kat-count">${jumlah} kartu</div>
+    `;
+    card.onclick = () => bukaMateri(kat.id, kat.icon);
+    grid.appendChild(card);
+  });
+
+  if (!adaKonten) {
+    grid.innerHTML = '<div class="kat-empty">📭 Materi belum diisi.<br>Hubungi pembina.</div>';
+  }
+}
+
+/** Membuka flashcard untuk kategori tertentu */
+function bukaMateri(kategori, icon) {
+  const list = (APP.rawData.Materi || []).filter(m => m.Kategori === kategori);
+  if (list.length === 0) {
+    alert('Materi kategori ini belum tersedia.'); return;
+  }
+
+  APP.kartuList     = list;
+  APP.kartuIdx      = 0;
+  APP.kartuKategori = kategori;
+
+  document.getElementById('kartu-bar-title').textContent = (icon || '📖') + ' ' + kategori;
+  document.getElementById('kartu-badge').textContent     = kategori;
+
+  renderKartu();
+  inisialisasiSwipe();
+  showScreen('s-kartu');
+}
+
+/** Merender flashcard pada indeks aktif */
+function renderKartu() {
+  const kartu      = APP.kartuList[APP.kartuIdx];
+  const total      = APP.kartuList.length;
+  const gambarObj  = APP.kamus[kartu.ID_Gambar];
+
+  // Counter & dots
+  document.getElementById('kartu-counter').textContent = `${APP.kartuIdx + 1}/${total}`;
+  renderDots(total, APP.kartuIdx);
+
+  // Tombol navigasi
+  document.getElementById('btn-prev').disabled = (APP.kartuIdx === 0);
+  document.getElementById('btn-next').disabled = (APP.kartuIdx === total - 1);
+
+  // Area gambar
+  const imgArea = document.getElementById('kartu-img-area');
+  if (gambarObj && gambarObj.ID_Drive) {
+    imgArea.innerHTML = `
+      <img src="${getThumbnailURL(gambarObj.ID_Drive, 'w500')}"
+           alt="${kartu.Judul}"
+           onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">
+    `;
+  } else {
+    imgArea.innerHTML = `<div class="kartu-no-img">📄</div>`;
+  }
+
+  // Konten teks
+  document.getElementById('kartu-judul').textContent       = kartu.Judul || '';
+  document.getElementById('kartu-penjelasan').textContent  = kartu.Penjelasan || '';
+}
+
+/** Merender titik indikator halaman */
+function renderDots(total, aktif) {
+  const wrap = document.getElementById('dots');
+  // Batasi maksimal 10 dots agar tidak overflow
+  const maxDots = Math.min(total, 10);
+  wrap.innerHTML = '';
+  for (let i = 0; i < maxDots; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === aktif ? ' active' : '');
+    wrap.appendChild(d);
+  }
+}
+
+function prevKartu() { if (APP.kartuIdx > 0) { APP.kartuIdx--; renderKartu(); } }
+function nextKartu() { if (APP.kartuIdx < APP.kartuList.length - 1) { APP.kartuIdx++; renderKartu(); } }
+
+// Bind tombol navigasi kartu
+document.getElementById('btn-prev').onclick = prevKartu;
+document.getElementById('btn-next').onclick = nextKartu;
+
+/** Inisialisasi gesture swipe pada flashcard */
+function inisialisasiSwipe() {
+  const fc = document.getElementById('flashcard');
+  fc.addEventListener('touchstart', e => {
+    APP.touchStartX = e.touches[0].clientX;
+    APP.touchStartY = e.touches[0].clientY;
+    fc.classList.add('swiping');
+  }, { passive: true });
+
+  fc.addEventListener('touchend', e => {
+    fc.classList.remove('swiping');
+    const dx = e.changedTouches[0].clientX - APP.touchStartX;
+    const dy = e.changedTouches[0].clientY - APP.touchStartY;
+    // Hanya proses swipe horizontal (bukan scroll vertikal)
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextKartu(); else prevKartu();
+    }
+  }, { passive: true });
+}
+
+/* ============================================================
+   7. KUIS — PILIH KATEGORI
+   ============================================================ */
+
+/** Memperbarui hint jumlah soal di layar pilih tantangan */
+function updateHintSoal() {
+  if (!APP.rawData) return;
+  const soalAll = APP.rawData.Soal || [];
+
+  const map = {
+    'Pahlawan'       : 'hint-pahlawan',
+    'Sumbu Filosofi' : 'hint-sumbu',
+    'Siapa Aku'      : 'hint-siapa',
+    'Unggah-ungguh'  : 'hint-unggah',
+    'Toleransi'      : 'hint-toleransi'
+  };
+
+  Object.entries(map).forEach(([kat, elId]) => {
+    const n = soalAll.filter(s => s.Kategori_Uji === kat).length;
+    const el = document.getElementById(elId);
+    if (el) el.textContent = n > 0 ? `${n} soal tersedia` : 'Belum ada soal';
+  });
+
+  const total = soalAll.length;
+  const camp  = Math.min(total, APP.config.campuran);
+  const elSemua = document.getElementById('hint-semua');
+  if (elSemua) elSemua.textContent = `${camp} soal acak dari ${total} total`;
+}
+
+/* ============================================================
+   8. KUIS — MESIN UTAMA
+   ============================================================ */
+
+/** Memulai sesi kuis untuk kategori tertentu */
+function mulaiKuis(kategori) {
+  if (!APP.rawData) { alert('Data belum tersedia.'); return; }
+
+  // Fullscreen untuk fokus ujian
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+
+  APP.kategori = kategori;
+  APP.skor     = 0;
+  APP.soalIdx  = 0;
+
+  // Kumpulkan soal berdasarkan mode
+  let pool;
+  if (kategori === 'Uji Semua') {
+    pool = fisherYates([...(APP.rawData.Soal || [])]).slice(0, APP.config.campuran);
+  } else {
+    pool = fisherYates(
+      (APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori)
+    );
+  }
+
+  if (pool.length === 0) {
+    alert(`Soal kategori "${kategori}" belum tersedia. Hubungi pembina.`);
+    return;
+  }
+
+  APP.soalList = pool;
+
+  document.getElementById('kuis-judul').textContent = kategori === 'Uji Semua' ? '🏆 Uji Semua Materi' : kategori;
+  document.getElementById('kuis-skor').textContent  = '0';
+
+  showScreen('s-kuis');
+  renderSoal();
+}
+
+/** Merender soal pada indeks aktif */
+function renderSoal() {
+  const soal  = APP.soalList[APP.soalIdx];
+  const total = APP.soalList.length;
+
+  // Update progress
+  document.getElementById('prog-fill').style.width    = `${(APP.soalIdx / total) * 100}%`;
+  document.getElementById('prog-counter').textContent = `${APP.soalIdx + 1}/${total}`;
+
+  // Render konten soal
+  renderKontenSoal(soal);
+
+  // Build & render opsi jawaban (auto-distractor)
+  const opsiArr    = buatOpsi(soal);
+  APP.jawabanId    = soal.Jawaban_Benar;
+  renderOpsi(opsiArr, soal.Tipe_Opsi);
+}
+
+/** Merender area konten soal berdasarkan Tipe_Input */
+function renderKontenSoal(soal) {
+  const box = document.getElementById('soal-box');
+
+  if (soal.Tipe_Input === 'Gambar') {
+    const gbj = APP.kamus[soal.ID_Gambar_Soal];
+    const url = gbj ? getThumbnailURL(gbj.ID_Drive, 'w600') : '';
+    box.innerHTML = `
+      <div class="soal-gambar-wrap">
+        ${url
+          ? `<img class="soal-gambar"
+                  src="${url}"
+                  alt="Gambar soal"
+                  onerror="this.style.display='none'">`
+          : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'
+        }
+        <div class="soal-hint">Siapakah tokoh / tempat ini?</div>
+      </div>
+    `;
+  } else {
+    // Default: Teks
+    box.innerHTML = `
+      <div class="soal-teks-wrap">
+        <div class="soal-teks">${soal.Konten_Soal || '—'}</div>
+      </div>
+    `;
+  }
+}
+
+/** Merender 4 opsi jawaban berdasarkan Tipe_Opsi */
+function renderOpsi(opsiArr, tipeOpsi) {
+  const grid = document.getElementById('opsi-grid');
+  grid.innerHTML = '';
+
+  opsiArr.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'opsi-btn';
+
+    if (tipeOpsi === 'Gambar') {
+      const url = item.ID_Drive ? getThumbnailURL(item.ID_Drive, 'w300') : '';
+      btn.innerHTML = `
+        <div class="opsi-skeleton" id="sk-${item.ID_Gambar}"></div>
+        <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}"
+             src="${url}"
+             alt="${item.Keterangan}"
+             onload="onOpsiImgLoad('${item.ID_Gambar}')"
+             onerror="onOpsiImgError('${item.ID_Gambar}','${escapeHtml(item.Keterangan)}')">
+        <span class="opsi-lbl-gambar">${item.Keterangan}</span>
+      `;
+    } else {
+      // Teks
+      btn.innerHTML = `<span class="opsi-lbl-teks">${item.Keterangan}</span>`;
     }
 
-    function masukAplikasi() {
-        const nama = document.getElementById('namaPeserta').value;
-        if (!nama) {
-            alert("Pilih namamu dulu ya!");
-            return;
-        }
-        state.peserta = nama;
-        document.getElementById('displayNama').innerText = nama;
-        bukaLayar('screen-menu');
+    btn.onclick = () => cekJawaban(item.ID_Gambar);
+    grid.appendChild(btn);
+  });
+}
+
+/** Dipanggil saat gambar opsi selesai dimuat */
+function onOpsiImgLoad(id) {
+  const sk  = document.getElementById('sk-' + id);
+  const img = document.getElementById('img-' + id);
+  if (sk)  sk.style.display  = 'none';
+  if (img) img.style.display = 'block';
+}
+
+/** Dipanggil saat gambar opsi gagal dimuat */
+function onOpsiImgError(id, keterangan) {
+  const sk  = document.getElementById('sk-' + id);
+  if (sk) {
+    sk.style.animation  = 'none';
+    sk.style.background = 'var(--hijau-light)';
+    sk.textContent      = keterangan;
+    sk.style.display    = 'flex';
+    sk.style.alignItems = 'center';
+    sk.style.justifyContent = 'center';
+    sk.style.fontSize   = '12px';
+    sk.style.fontWeight = '700';
+    sk.style.color      = 'var(--text-mid)';
+    sk.style.padding    = '4px';
+    sk.style.textAlign  = 'center';
+  }
+}
+
+/** Memeriksa jawaban yang dipilih peserta */
+function cekJawaban(pilihanId) {
+  // Disable semua opsi untuk mencegah double-tap
+  document.querySelectorAll('.opsi-btn').forEach(b => b.disabled = true);
+
+  const benar = (pilihanId === APP.jawabanId);
+
+  if (benar) {
+    APP.skor += APP.config.poin;
+    document.getElementById('kuis-skor').textContent = APP.skor;
+  } else {
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  }
+
+  tampilFeedback(benar ? 'benar' : 'salah');
+
+  setTimeout(() => {
+    sembunyikanFeedback();
+    APP.soalIdx++;
+    if (APP.soalIdx < APP.soalList.length) {
+      renderSoal();
+    } else {
+      selesaiKuis();
     }
+  }, 1200);
+}
 
-    // Fungsi Utama Mesin Kuis
-    function mulaiKuis(kategori) {
-        // Minta akses fullscreen saat ujian dimulai untuk mengunci fokus layar
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch((err) => console.log(err));
-        }
+/** Menampilkan overlay feedback benar/salah */
+function tampilFeedback(tipe) {
+  const el   = document.getElementById('feedback');
+  const icon = document.getElementById('fb-icon');
+  el.className = '';
+  icon.textContent = tipe === 'benar' ? '✅' : '❌';
+  // Force reflow untuk restart animasi
+  void el.offsetWidth;
+  el.className = `show ${tipe}`;
+}
 
-        state.kategoriAktif = kategori;
-        state.skor = 0;
-        state.indeksSoal = 0;
-        document.getElementById('judulKuis').innerText = kategori;
-        document.getElementById('skorKuis').innerText = state.skor;
+function sembunyikanFeedback() {
+  document.getElementById('feedback').className = '';
+}
 
-        // Filter soal berdasarkan pilihan (atau ambil semua jika mode Uji Semua)
-        if(kategori === 'Uji Semua') {
-            state.soalTersedia = [...bankSoalLokal];
-        } else {
-            state.soalTersedia = bankSoalLokal.filter(s => s.kategori === kategori);
-        }
+/** Keluar dari kuis (tombol ✕) */
+function keluarKuis() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  sembunyikanFeedback();
+  showScreen('s-pilih');
+}
 
-        if(state.soalTersedia.length === 0) {
-            alert("Maaf, soal untuk kategori ini sedang disiapkan panitia.");
-            return;
-        }
+/* ============================================================
+   9. AUTO-DISTRACTOR — Buat 4 opsi dari pool kategori
+   ============================================================ */
 
-        bukaLayar('screen-kuis');
-        tampilkanSoal();
-    }
+/**
+ * Menghasilkan array 4 opsi jawaban (1 benar + 3 pengecoh acak)
+ * dari pool gambar kategori yang sama.
+ *
+ * Fallback: jika pool utama < 3, ambil kekurangan dari kategori lain.
+ *
+ * @param  {Object} soal  - Objek soal dari sheet Soal
+ * @returns {Array}  Array 4 objek Gambar yang sudah diacak posisinya
+ */
+function buatOpsi(soal) {
+  const jawabanId = soal.Jawaban_Benar;
+  const kategori  = soal.Kategori_Uji;
+  const allGambar = APP.rawData.Gambar || [];
 
-    function tampilkanSoal() {
-        const dataSoal = state.soalTersedia[state.indeksSoal];
-        
-        // Perbarui progres bar
-        const persentase = ((state.indeksSoal) / state.soalTersedia.length) * 100;
-        document.getElementById('progressBar').style.width = `${persentase}%`;
+  // Pool utama: kategori sama, bukan jawaban benar
+  let pool = allGambar.filter(g =>
+    g.Kategori === kategori && g.ID_Gambar !== jawabanId
+  );
 
-        // Tampilkan teks pertanyaan
-        document.getElementById('teksSoal').innerText = dataSoal.soal;
+  // Fallback jika pool kurang dari 3
+  if (pool.length < 3) {
+    const fallback = fisherYates(
+      allGambar.filter(g =>
+        g.Kategori !== kategori && g.ID_Gambar !== jawabanId
+      )
+    );
+    pool = [...pool, ...fallback];
+  }
 
-        // Acak opsi jawaban menggunakan algoritma Fisher-Yates
-        let opsiAcak = [...dataSoal.opsi];
-        for (let i = opsiAcak.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [opsiAcak[i], opsiAcak[j]] = [opsiAcak[j], opsiAcak[i]];
-        }
+  // Ambil 3 pengecoh acak
+  const pengecoh = fisherYates(pool).slice(0, 3);
 
-        // Suntikkan tombol opsi ke layar
-        const wadahOpsi = document.getElementById('wadahOpsi');
-        wadahOpsi.innerHTML = '';
-        opsiAcak.forEach(teksOpsi => {
-            const btn = document.createElement('div');
-            btn.className = 'option-btn';
-            btn.innerText = teksOpsi;
-            btn.onclick = () => cekJawaban(teksOpsi, dataSoal.jawaban);
-            wadahOpsi.appendChild(btn);
-        });
-    }
+  // Temukan objek jawaban benar dari kamus
+  const jawabanObj = allGambar.find(g => g.ID_Gambar === jawabanId);
 
-    function cekJawaban(jawabanPilih, jawabanBenar) {
-        const overlay = document.getElementById('feedback-overlay');
-        const icon = document.getElementById('feedback-icon');
+  if (!jawabanObj) {
+    console.warn('[Auto-Distractor] Jawaban benar tidak ditemukan di sheet Gambar:', jawabanId);
+    // Kembalikan hanya pengecoh (soal tetap ditampilkan meski tidak ideal)
+    return fisherYates(pengecoh);
+  }
 
-        if(jawabanPilih === jawabanBenar) {
-            state.skor += 10;
-            document.getElementById('skorKuis').innerText = state.skor;
-            icon.innerHTML = "✅";
-            icon.className = "feedback-icon feedback-correct";
-        } else {
-            icon.innerHTML = "❌";
-            icon.className = "feedback-icon feedback-wrong";
-            // Jika salah, getarkan HP (jika didukung peramban)
-            if(navigator.vibrate) navigator.vibrate(200);
-        }
+  // Gabungkan & acak posisi 4 opsi
+  return fisherYates([jawabanObj, ...pengecoh]);
+}
 
-        // Tampilkan umpan balik
-        overlay.classList.add('show');
-        
-        // Jeda singkat sebelum soal berikutnya
-        setTimeout(() => {
-            overlay.classList.remove('show');
-            state.indeksSoal++;
-            
-            if(state.indeksSoal < state.soalTersedia.length) {
-                tampilkanSoal();
-            } else {
-                selesaiKuis();
-            }
-        }, 1200);
-    }
+/* ============================================================
+   10. HASIL AKHIR
+   ============================================================ */
 
-    function selesaiKuis() {
-        document.getElementById('progressBar').style.width = '100%';
-        // Kirim data ke GAS (Implementasi tertunda menunggu URL Endpoint)
-        /*
-        fetch('URL_WEB_APP_GAS', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                namaPeserta: state.peserta,
-                kategori: state.kategoriAktif,
-                skor: state.skor
-            })
-        });
-        */
-        setTimeout(() => {
-            alert(`Luar biasa, ${state.peserta}! \nKamu mendapat skor ${state.skor} di tantangan ${state.kategoriAktif}.`);
-            keluarKuis();
-        }, 500);
-    }
+/** Menampilkan layar hasil setelah semua soal selesai */
+function selesaiKuis() {
+  // Update progress bar ke 100%
+  document.getElementById('prog-fill').style.width = '100%';
 
-    function keluarKuis() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen().catch(err => console.log(err));
-        }
-        bukaLayar('screen-kategori-uji');
-    }
+  const total      = APP.soalList.length;
+  const maxSkor    = total * APP.config.poin;
+  const persen     = maxSkor > 0 ? Math.round((APP.skor / maxSkor) * 100) : 0;
+  const bintang    = persen >= 80 ? 3 : persen >= 50 ? 2 : 1;
+
+  const PESAN = {
+    3 : 'Luar biasa! Kamu sudah sangat siap tampil di lomba! 🎉',
+    2 : 'Bagus sekali! Sedikit lagi kamu pasti bisa maksimal!',
+    1 : 'Jangan menyerah! Baca lagi materinya, kamu pasti bisa!'
+  };
+
+  document.getElementById('hasil-nama').textContent  = APP.peserta;
+  document.getElementById('hasil-skor').textContent  = APP.skor;
+  document.getElementById('hasil-kat').textContent   = APP.kategori === 'Uji Semua'
+    ? '🏆 Uji Semua Materi' : '📌 ' + APP.kategori;
+  document.getElementById('hasil-bintang').textContent = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
+  document.getElementById('hasil-pesan').textContent = PESAN[bintang];
+
+  // Keluar fullscreen
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+
+  showScreen('s-hasil');
+
+  // Kirim skor ke GAS (silent, fire-and-forget)
+  kirimSkor();
+}
+
+/** Ulangi kuis dengan kategori yang sama */
+function ulangiKuis() {
+  mulaiKuis(APP.kategori);
+}
+
+/** POST skor ke GAS secara silent */
+function kirimSkor() {
+  if (!GAS_URL || GAS_URL.includes('GANTI')) return;
+  fetch(GAS_URL, {
+    method  : 'POST',
+    mode    : 'no-cors',  // Fire and forget — tidak perlu baca respons
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify({
+      action      : 'submitScore',
+      namaPeserta : APP.peserta,
+      kategori    : APP.kategori,
+      skor        : APP.skor
+    })
+  }).catch(err => console.warn('[kirimSkor] Gagal:', err.message));
+}
+
+/* ============================================================
+   11. FUNGSI UTILITAS
+   ============================================================ */
+
+/**
+ * Menghasilkan URL thumbnail Google Drive dari File ID.
+ * @param {string} idDrive - File ID Google Drive
+ * @param {string} ukuran  - Ukuran thumbnail, misal 'w300', 'w500', 'w600'
+ */
+function getThumbnailURL(idDrive, ukuran = 'w400') {
+  if (!idDrive) return '';
+  return `https://drive.google.com/thumbnail?id=${idDrive}&sz=${ukuran}`;
+}
+
+/**
+ * Fisher-Yates shuffle — mengacak array tanpa mengubah aslinya.
+ * @param {Array} arr - Array yang ingin diacak
+ * @returns {Array} Array baru yang sudah diacak
+ */
+function fisherYates(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
+ * Membangun kamus ID_Gambar → objek Gambar untuk lookup O(1).
+ * @param {Array} gambarArr - Array data dari sheet Gambar
+ * @returns {Object} Kamus { ID_Gambar: { ID_Drive, Kategori, Keterangan } }
+ */
+function buildKamus(gambarArr) {
+  const kamus = {};
+  (gambarArr || []).forEach(g => { kamus[g.ID_Gambar] = g; });
+  return kamus;
+}
+
+/**
+ * Mem-parsing array Pengaturan menjadi objek konfigurasi.
+ * @param {Array} arr - Array data dari sheet Pengaturan
+ * @returns {Object} { poin: number, campuran: number }
+ */
+function parseConfig(arr) {
+  const cfg = { poin: 10, campuran: 15 };
+  (arr || []).forEach(row => {
+    if (row.Parameter === 'Poin_Per_Soal')        cfg.poin     = Number(row.Nilai) || 10;
+    if (row.Parameter === 'Jumlah_Soal_Campuran') cfg.campuran = Number(row.Nilai) || 15;
+  });
+  return cfg;
+}
+
+/**
+ * Memeriksa apakah Status_Akses = "Buka".
+ * @param {Array} pengaturanArr - Array data dari sheet Pengaturan
+ * @returns {boolean}
+ */
+function checkAccess(pengaturanArr) {
+  if (!Array.isArray(pengaturanArr) || pengaturanArr.length === 0) return false;
+  const row = pengaturanArr.find(r => r.Parameter === 'Status_Akses');
+  return row ? row.Nilai === 'Buka' : false;
+}
+
+/** Sanitasi teks untuk dipakai di dalam atribut HTML */
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 </script>
 </body>
 </html>
