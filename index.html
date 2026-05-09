@@ -82,7 +82,6 @@
       background: var(--bg);
     }
     .screen.active { 
-      /* Menggunakan Flexbox agar konten proporsional dan tidak ada scroll kosong */
       display: flex; 
       flex-direction: column;
       animation: screenIn 0.22s ease-out; 
@@ -126,7 +125,6 @@
     .btn-kuning  { background: var(--kuning); color: var(--cokelat); }
     .btn-outline { background: transparent; color: var(--hijau); border: 2.5px solid var(--hijau-border); }
 
-    /* Tombol Logout Kanan Atas */
     .btn-logout-top {
       position: absolute; top: 22px; right: 20px;
       background: rgba(255, 255, 255, 0.15);
@@ -180,8 +178,7 @@
 
     .login-card {
       background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0;
-      padding: 30px 24px 44px; margin-top: -1px;
-      flex: 1; /* <-- Perbaikan: Mengisi ruang kosong tanpa scroll ekstra */
+      padding: 30px 24px 44px; margin-top: -1px; flex: 1;
     }
     .login-card label { display: block; font-size: 12px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
     .select-nama {
@@ -347,10 +344,30 @@
     .hasil-skor-num { color: var(--kuning); font-size: 76px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
     .hasil-skor-lbl { color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 600; margin-top: 4px; }
     .hasil-bintang  { font-size: 38px; margin-top: 14px; letter-spacing: 4px; }
-    .hasil-card { background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: 28px 22px 48px; margin-top: -1px; flex: 1; /* <-- Eliminates scroll */ }
+    .hasil-card { background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: 28px 22px 48px; margin-top: -1px; flex: 1; }
     .hasil-kat { font-size: 11px; text-align: center; color: var(--text-mid); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
     .hasil-pesan { font-size: 15px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.65; padding: 14px 16px; background: var(--hijau-light); border-radius: var(--r); border-left: 4px solid var(--hijau); margin-bottom: 22px; }
     .hasil-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ============================================================
+       MODAL PERINGATAN KUSTOM (Pengganti Alert)
+       ============================================================ */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--white); width: 85%; max-width: 320px;
+      border-radius: var(--r-lg); padding: 24px; text-align: center;
+      box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
+    }
+    .modal-overlay.show .modal-box { transform: scale(1); }
+    .modal-icon { font-size: 48px; margin-bottom: 12px; }
+    .modal-title { font-size: 18px; font-weight: 900; color: var(--hijau); margin-bottom: 8px; }
+    .modal-desc { font-size: 14px; color: var(--text-mid); font-weight: 700; margin-bottom: 20px; line-height: 1.5; }
   </style>
 </head>
 
@@ -460,8 +477,7 @@
     </div>
     <div class="screen-body">
       <div class="sec-title" style="margin-top:4px;">Pilih topik yang ingin dipelajari</div>
-      <div class="kat-grid" id="kat-grid">
-        </div>
+      <div class="kat-grid" id="kat-grid"></div>
     </div>
   </div>
 
@@ -573,6 +589,15 @@
   <div class="fb-icon" id="fb-icon">✅</div>
 </div>
 
+<div id="custom-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Perhatian</div>
+    <div class="modal-desc" id="modal-desc">Pesan diletakkan di sini.</div>
+    <button class="btn-solid btn-primary" onclick="closeModal()">Tutup Peringatan</button>
+  </div>
+</div>
+
 <script>
 'use strict';
 
@@ -604,8 +629,18 @@ const APP = {
 };
 
 /* ============================================================
-   3. ANIMASI LOADING & NAVIGASI
+   3. SISTEM MODAL KUSTOM & NAVIGASI
    ============================================================ */
+function showModal(pesan, judul = 'Perhatian') {
+  document.getElementById('modal-title').textContent = judul;
+  document.getElementById('modal-desc').textContent  = pesan;
+  document.getElementById('custom-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('custom-modal').classList.remove('show');
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
@@ -702,11 +737,11 @@ async function handleLogin() {
         APP.config  = parseConfig(json.data.Pengaturan);
         finishLoadingAnim(lanjutKeMenu);
       } else {
-        alert('Gagal memuat data. Periksa koneksi internet.');
+        showModal('Gagal memuat data. Periksa koneksi internet Anda.');
         finishLoadingAnim(() => showScreen('s-login'));
       }
     } catch (err) {
-      alert('Tidak bisa terhubung ke server. Coba lagi.');
+      showModal('Tidak bisa terhubung ke server. Pastikan koneksi stabil lalu coba lagi.');
       finishLoadingAnim(() => showScreen('s-login'));
     }
   } else {
@@ -768,7 +803,10 @@ function renderKatGrid() {
 
 function bukaMateri(kategori, icon) {
   const list = (APP.rawData.Materi || []).filter(m => m.Kategori === kategori);
-  if (list.length === 0) { alert('Materi kategori ini belum tersedia.'); return; }
+  if (list.length === 0) { 
+    showModal('Materi untuk kategori ini belum dimasukkan oleh Pembina.', 'Materi Kosong'); 
+    return; 
+  }
 
   APP.kartuList     = list;
   APP.kartuIdx      = 0;
@@ -869,7 +907,7 @@ function updateHintSoal() {
    8. KUIS — MESIN UTAMA
    ============================================================ */
 function mulaiKuis(kategori) {
-  if (!APP.rawData) { alert('Data belum tersedia.'); return; }
+  if (!APP.rawData) { showModal('Data soal belum terhubung dari server.'); return; }
   if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(() => {}); }
 
   APP.kategori = kategori;
@@ -883,7 +921,10 @@ function mulaiKuis(kategori) {
     pool = fisherYates((APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori));
   }
 
-  if (pool.length === 0) { alert(`Soal kategori "${kategori}" belum tersedia. Hubungi pembina.`); return; }
+  if (pool.length === 0) { 
+    showModal(`Soal uji untuk kategori "${kategori}" belum diinput oleh Pembina.`, 'Kuis Kosong'); 
+    return; 
+  }
 
   APP.soalList = pool;
   document.getElementById('kuis-judul').textContent = kategori === 'Uji Semua' ? '🏆 Uji Semua Materi' : kategori;
