@@ -611,17 +611,16 @@
     </div>
     <div class="menu-body">
       <div class="sec-title">Mau ngapain dulu?</div>
+      
       <div class="menu-grid">
         <button class="menu-card mc-materi" onclick="showScreen('s-materi')">
           <div class="card-icon">📖</div>
-          </div> <button class="btn-solid btn-keluar" onclick="keluarKeLogin()">
-      🔄 Ganti Nama Pemain
-    </button>
-</div>
+          <div>
             <div class="card-label">Materi Belajar</div>
             <div class="card-desc">Baca flashcard</div>
           </div>
         </button>
+
         <button class="menu-card mc-kuis" onclick="showScreen('s-pilih')">
           <div class="card-icon">🎯</div>
           <div>
@@ -629,6 +628,7 @@
             <div class="card-desc">Pilih kategori kuis!</div>
           </div>
         </button>
+
         <button class="menu-card mc-log wide" onclick="mulaiKuis('Uji Semua')">
           <div class="card-icon">🏆</div>
           <div class="card-text">
@@ -638,9 +638,14 @@
           <div class="card-arrow">→</div>
         </button>
       </div>
+
+      <button class="btn-solid btn-keluar" onclick="keluarKeLogin()">
+        🔄 Ganti Nama Pemain
+      </button>
+
     </div>
   </div>
-
+  
   <div id="s-materi" class="screen">
     <div class="top-bar">
       <button class="btn-back" onclick="showScreen('s-menu')">←</button>
