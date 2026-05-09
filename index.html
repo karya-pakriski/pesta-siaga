@@ -164,7 +164,7 @@
     .tutup-badge { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); padding: 8px 20px; border-radius: 99px; font-size: 13px; font-weight: 700; }
 
     /* ============================================================
-       SCREEN: LOGIN
+       SCREEN: LOGIN (Pembaruan BottomSheet)
        ============================================================ */
     #s-login { background: var(--hijau); }
     .login-hero {
@@ -181,15 +181,69 @@
       padding: 30px 24px 44px; margin-top: -1px; flex: 1;
     }
     .login-card label { display: block; font-size: 12px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-    .select-nama {
-      width: 100%; padding: 14px 40px 14px 16px; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); background: var(--hijau-light);
-      border: 2.5px solid var(--hijau-border); border-radius: var(--r); appearance: none; -webkit-appearance: none;
+    
+    /* Pemicu BottomSheet Pengganti Select */
+    .nama-trigger {
+      width: 100%; padding: 14px 40px 14px 16px; font-family: 'Nunito', sans-serif; font-size: 16px;
+      font-weight: 700; color: var(--text-mid); background: var(--hijau-light);
+      border: 2.5px solid var(--hijau-border); border-radius: var(--r); text-align: left;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231B5E20' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; transition: border-color 0.2s; outline: none; margin-bottom: 20px;
+      background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; transition: border-color 0.2s, color 0.2s; outline: none; margin-bottom: 20px;
     }
-    .select-nama:focus { border-color: var(--hijau); background: var(--white); }
+    .nama-trigger.terpilih {
+      color: var(--text); border-color: var(--hijau); background-color: var(--white); font-weight: 800;
+    }
+    .nama-trigger:active { transform: scale(0.98); }
+
     .login-error { background: var(--merah-light); border: 2px solid #EF9A9A; border-radius: var(--r); padding: 12px 16px; font-size: 13px; color: var(--merah); font-weight: 700; text-align: center; margin-bottom: 16px; display: none; }
     .login-error.show { display: block; }
+
+    /* BottomSheet Daftar Nama */
+    .sheet-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 100;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .sheet-overlay.show { opacity: 1; pointer-events: all; }
+    .sheet-box {
+      position: absolute; bottom: -100%; left: 0; width: 100%;
+      background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0;
+      display: flex; flex-direction: column; max-height: 80%;
+      transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1); box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    .sheet-overlay.show .sheet-box { bottom: 0; }
+    .sheet-header {
+      padding: 16px 20px; border-bottom: 2px solid var(--hijau-light);
+      display: flex; justify-content: space-between; align-items: center; position: relative;
+    }
+    .sheet-header::before {
+      content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 4px; background: var(--hijau-border); border-radius: 4px;
+    }
+    .sheet-title { font-size: 16px; font-weight: 800; color: var(--hijau); margin-top: 6px; }
+    .sheet-close {
+      background: var(--hijau-light); border: none; width: 30px; height: 30px; border-radius: 50%;
+      color: var(--hijau); font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 6px;
+    }
+    .sheet-body {
+      padding: 0 16px 20px; overflow-y: auto; flex: 1;
+    }
+    .nama-group { margin-top: 16px; }
+    .nama-group-title {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-mid); margin-bottom: 8px; padding-left: 4px;
+    }
+    .nama-list {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .nama-item {
+      background: var(--white); border: 2px solid var(--hijau-light); border-radius: 12px;
+      padding: 12px 10px; font-size: 14px; font-weight: 700; color: var(--text); text-align: center;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .nama-item:active { background: var(--hijau-light); transform: scale(0.96); }
+    .nama-item.putra { border-color: #BBDEFB; } .nama-item.putra:active { background: #E3F2FD; }
+    .nama-item.putri { border-color: #FFCDD2; } .nama-item.putri:active { background: #FFEBEE; }
 
     /* ============================================================
        SCREEN: MENU UTAMA
@@ -350,7 +404,7 @@
     .hasil-actions { display: flex; flex-direction: column; gap: 10px; }
 
     /* ============================================================
-       MODAL PERINGATAN KUSTOM (Pengganti Alert)
+       MODAL PERINGATAN KUSTOM
        ============================================================ */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -404,28 +458,48 @@
     </div>
 
     <div class="login-card">
-      <label for="sel-nama">Pilih Nama Kamu</label>
+      <label>Pilih Nama Kamu</label>
       <div class="login-error" id="login-error">Pilih namamu dulu sebelum masuk! 👇</div>
-      <select class="select-nama" id="sel-nama">
-        <option value="" disabled selected>-- Nama Saya --</option>
-        <optgroup label="🟦 Barung Putra">
-          <option>Zaffa</option>
-          <option>Azzam</option>
-          <option>Naja</option>
-          <option>Risqi</option>
-          <option>Reyvan</option>
-          <option>Rakha</option>
-        </optgroup>
-        <optgroup label="🟥 Barung Putri">
-          <option>Alesha</option>
-          <option>Anindya</option>
-          <option>Adinda</option>
-          <option>Nafisah</option>
-          <option>Nanda</option>
-          <option>Shafeea</option>
-        </optgroup>
-      </select>
+      
+      <button class="nama-trigger" id="btn-pilih-nama" onclick="bukaSheetNama()">-- Nama Saya --</button>
+      
       <button class="btn-solid btn-primary" onclick="handleLogin()">Mulai Bermain 🚀</button>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="sheet-nama" onclick="tutupSheetNama(event)">
+    <div class="sheet-box" onclick="event.stopPropagation()">
+      <div class="sheet-header">
+        <div class="sheet-title">Pilih Nama</div>
+        <button class="sheet-close" onclick="tutupSheetNama()">✕</button>
+      </div>
+      <div class="sheet-body">
+        
+        <div class="nama-group">
+          <div class="nama-group-title">🟦 Barung Putra</div>
+          <div class="nama-list">
+            <button class="nama-item putra" onclick="pilihNama('Zaffa')">Zaffa</button>
+            <button class="nama-item putra" onclick="pilihNama('Azzam')">Azzam</button>
+            <button class="nama-item putra" onclick="pilihNama('Naja')">Naja</button>
+            <button class="nama-item putra" onclick="pilihNama('Risqi')">Risqi</button>
+            <button class="nama-item putra" onclick="pilihNama('Reyvan')">Reyvan</button>
+            <button class="nama-item putra" onclick="pilihNama('Rakha')">Rakha</button>
+          </div>
+        </div>
+
+        <div class="nama-group">
+          <div class="nama-group-title">🟥 Barung Putri</div>
+          <div class="nama-list">
+            <button class="nama-item putri" onclick="pilihNama('Alesha')">Alesha</button>
+            <button class="nama-item putri" onclick="pilihNama('Anindya')">Anindya</button>
+            <button class="nama-item putri" onclick="pilihNama('Adinda')">Adinda</button>
+            <button class="nama-item putri" onclick="pilihNama('Nafisah')">Nafisah</button>
+            <button class="nama-item putri" onclick="pilihNama('Nanda')">Nanda</button>
+            <button class="nama-item putri" onclick="pilihNama('Shafeea')">Shafeea</button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -629,7 +703,7 @@ const APP = {
 };
 
 /* ============================================================
-   3. SISTEM MODAL KUSTOM & NAVIGASI
+   3. SISTEM MODAL KUSTOM, SHEET & NAVIGASI
    ============================================================ */
 function showModal(pesan, judul = 'Perhatian') {
   document.getElementById('modal-title').textContent = judul;
@@ -639,6 +713,25 @@ function showModal(pesan, judul = 'Perhatian') {
 
 function closeModal() {
   document.getElementById('custom-modal').classList.remove('show');
+}
+
+// Logika BottomSheet Daftar Nama
+function bukaSheetNama() {
+  document.getElementById('sheet-nama').classList.add('show');
+}
+
+function tutupSheetNama(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('sheet-nama').classList.remove('show');
+}
+
+function pilihNama(nama) {
+  APP.peserta = nama;
+  const btn = document.getElementById('btn-pilih-nama');
+  btn.textContent = nama;
+  btn.classList.add('terpilih');
+  document.getElementById('login-error').classList.remove('show');
+  tutupSheetNama();
 }
 
 function showScreen(id) {
@@ -719,12 +812,10 @@ function prosesDariGAS(json) {
    5. LOGIN
    ============================================================ */
 async function handleLogin() {
-  const nama  = document.getElementById('sel-nama').value;
   const errEl = document.getElementById('login-error');
 
-  if (!nama) { errEl.classList.add('show'); return; }
+  if (!APP.peserta) { errEl.classList.add('show'); return; }
   errEl.classList.remove('show');
-  APP.peserta = nama;
 
   if (!APP.rawData) {
     startLoadingAnim();
@@ -759,7 +850,9 @@ function lanjutKeMenu() {
 
 function keluarKeLogin() {
   APP.peserta = '';
-  document.getElementById('sel-nama').value = '';
+  const btn = document.getElementById('btn-pilih-nama');
+  btn.textContent = '-- Nama Saya --';
+  btn.classList.remove('terpilih');
   showScreen('s-login');
 }
 
@@ -908,6 +1001,7 @@ function updateHintSoal() {
    ============================================================ */
 function mulaiKuis(kategori) {
   if (!APP.rawData) { showModal('Data soal belum terhubung dari server.'); return; }
+  
   APP.kategori = kategori;
   APP.skor     = 0;
   APP.soalIdx  = 0;
