@@ -82,7 +82,9 @@
       background: var(--bg);
     }
     .screen.active { 
-      display: block; 
+      /* Menggunakan Flexbox agar konten proporsional dan tidak ada scroll kosong */
+      display: flex; 
+      flex-direction: column;
       animation: screenIn 0.22s ease-out; 
     }
     @keyframes screenIn {
@@ -91,7 +93,7 @@
     }
 
     /* ============================================================
-       SHARED: TOP BAR
+       SHARED: TOP BAR & BUTTONS
        ============================================================ */
     .top-bar {
       display: flex; align-items: center;
@@ -111,9 +113,6 @@
     .bar-title { font-size: 17px; font-weight: 800; color: var(--hijau); flex: 1; }
     .bar-extra { font-size: 13px; font-weight: 700; color: var(--text-mid); }
 
-    /* ============================================================
-       SHARED: BUTTONS
-       ============================================================ */
     .btn-solid {
       width: 100%; padding: 15px; border: none;
       border-radius: var(--r); font-family: 'Nunito', sans-serif;
@@ -127,21 +126,26 @@
     .btn-kuning  { background: var(--kuning); color: var(--cokelat); }
     .btn-outline { background: transparent; color: var(--hijau); border: 2.5px solid var(--hijau-border); }
 
-    /* ============================================================
-       SCREEN: LOADING / SPLASH
-       ============================================================ */
-    #s-loading {
-      flex-direction: column;
-      align-items: center; justify-content: center;
-      background: var(--hijau); color: var(--white); gap: 18px;
+    /* Tombol Logout Kanan Atas */
+    .btn-logout-top {
+      position: absolute; top: 22px; right: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      color: var(--white); border-radius: 99px;
+      padding: 6px 14px; font-size: 12px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.15s; z-index: 10;
     }
-    #s-loading.active { display: flex; }
+    .btn-logout-top:active { background: rgba(255, 255, 255, 0.25); transform: scale(0.96); }
+
+    /* ============================================================
+       SCREEN: LOADING / SPLASH & AKSES DITUTUP
+       ============================================================ */
+    #s-loading { align-items: center; justify-content: center; background: var(--hijau); color: var(--white); gap: 18px; }
     .splash-logo { font-size: 72px; animation: pulse 2s ease-in-out infinite; }
     .splash-title { font-size: 22px; font-weight: 900; text-align: center; line-height: 1.2; }
     
-    .loading-box {
-      width: 70%; max-width: 220px; text-align: center; margin-top: 10px;
-    }
+    .loading-box { width: 70%; max-width: 220px; text-align: center; margin-top: 10px; }
     .loading-bar-bg {
       width: 100%; height: 12px; background: rgba(255,255,255,0.25);
       border-radius: 8px; overflow: hidden; margin-bottom: 8px;
@@ -153,128 +157,63 @@
     }
     .loading-pct { font-size: 18px; font-weight: 900; color: var(--kuning); letter-spacing: 1px; }
     .splash-sub { font-size: 13px; opacity: 0.85; font-weight: 600; }
-    
     @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
 
-    /* ============================================================
-       SCREEN: AKSES DITUTUP
-       ============================================================ */
-    #s-tutup {
-      flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 40px 28px;
-      background: var(--hijau); color: var(--white); gap: 14px;
-    }
-    #s-tutup.active { display: flex; }
+    #s-tutup { align-items: center; justify-content: center; text-align: center; padding: 40px 28px; background: var(--hijau); color: var(--white); gap: 14px; }
     #s-tutup .tutup-icon { font-size: 72px; }
     #s-tutup h2 { font-size: 24px; font-weight: 900; }
     #s-tutup p  { font-size: 15px; opacity: 0.8; line-height: 1.7; max-width: 300px; }
-    .tutup-badge {
-      background: rgba(255,255,255,0.12);
-      border: 1.5px solid rgba(255,255,255,0.25);
-      padding: 8px 20px; border-radius: 99px;
-      font-size: 13px; font-weight: 700;
-    }
+    .tutup-badge { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); padding: 8px 20px; border-radius: 99px; font-size: 13px; font-weight: 700; }
 
     /* ============================================================
        SCREEN: LOGIN
        ============================================================ */
     #s-login { background: var(--hijau); }
-
     .login-hero {
       padding: 52px 24px 36px; text-align: center;
-      background:
-        repeating-linear-gradient(45deg,
-          transparent, transparent 18px,
-          rgba(255,255,255,0.025) 18px,
-          rgba(255,255,255,0.025) 19px),
-        var(--hijau);
+      background: repeating-linear-gradient(45deg, transparent, transparent 18px, rgba(255,255,255,0.025) 18px, rgba(255,255,255,0.025) 19px), var(--hijau);
     }
     .login-logo  { font-size: 68px; margin-bottom: 14px; }
     .login-title { color: var(--white); font-size: 28px; font-weight: 900; line-height: 1.15; }
-    .login-sekolah {
-      color: var(--kuning); font-size: 13px; font-weight: 700;
-      margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px;
-    }
-    .login-slogan {
-      display: inline-block; margin-top: 16px;
-      background: rgba(255,255,255,0.12);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.9);
-      font-size: 12px; font-weight: 700;
-      padding: 7px 18px; border-radius: 99px; letter-spacing: 0.3px;
-    }
+    .login-sekolah { color: var(--kuning); font-size: 13px; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px; }
+    .login-slogan { display: inline-block; margin-top: 16px; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 700; padding: 7px 18px; border-radius: 99px; letter-spacing: 0.3px; }
 
     .login-card {
-      background: var(--white);
-      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0;
       padding: 30px 24px 44px; margin-top: -1px;
-      min-height: 100%;
+      flex: 1; /* <-- Perbaikan: Mengisi ruang kosong tanpa scroll ekstra */
     }
-    .login-card label {
-      display: block; font-size: 12px; font-weight: 800;
-      color: var(--text-mid); text-transform: uppercase;
-      letter-spacing: 0.8px; margin-bottom: 10px;
-    }
+    .login-card label { display: block; font-size: 12px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
     .select-nama {
-      width: 100%; padding: 14px 40px 14px 16px;
-      font-family: 'Nunito', sans-serif; font-size: 16px;
-      font-weight: 700; color: var(--text);
-      background: var(--hijau-light);
-      border: 2.5px solid var(--hijau-border);
-      border-radius: var(--r); appearance: none; -webkit-appearance: none;
+      width: 100%; padding: 14px 40px 14px 16px; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); background: var(--hijau-light);
+      border: 2.5px solid var(--hijau-border); border-radius: var(--r); appearance: none; -webkit-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231B5E20' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 14px center;
-      cursor: pointer; transition: border-color 0.2s; outline: none; margin-bottom: 20px;
+      background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; transition: border-color 0.2s; outline: none; margin-bottom: 20px;
     }
     .select-nama:focus { border-color: var(--hijau); background: var(--white); }
-
-    .login-error {
-      background: var(--merah-light); border: 2px solid #EF9A9A;
-      border-radius: var(--r); padding: 12px 16px;
-      font-size: 13px; color: var(--merah); font-weight: 700;
-      text-align: center; margin-bottom: 16px; display: none;
-    }
+    .login-error { background: var(--merah-light); border: 2px solid #EF9A9A; border-radius: var(--r); padding: 12px 16px; font-size: 13px; color: var(--merah); font-weight: 700; text-align: center; margin-bottom: 16px; display: none; }
     .login-error.show { display: block; }
 
     /* ============================================================
        SCREEN: MENU UTAMA
        ============================================================ */
     .menu-header {
-      padding: 28px 22px 24px;
-      background:
-        repeating-linear-gradient(135deg,
-          transparent, transparent 20px,
-          rgba(255,255,255,0.025) 20px,
-          rgba(255,255,255,0.025) 21px),
-        var(--hijau);
+      padding: 28px 22px 24px; position: relative;
+      background: repeating-linear-gradient(135deg, transparent, transparent 20px, rgba(255,255,255,0.025) 20px, rgba(255,255,255,0.025) 21px), var(--hijau);
     }
-    .menu-sapa  { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 600; }
+    .menu-sapa  { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 600; margin-top: 8px; }
     .menu-nama  { color: var(--white); font-size: 26px; font-weight: 900; line-height: 1.1; }
     .menu-nama span { color: var(--kuning); }
     .menu-tagline { color: rgba(255,255,255,0.65); font-size: 13px; margin-top: 3px; }
 
-    .menu-body { padding: 18px 16px 24px; }
-
-    .sec-title {
-      font-size: 11px; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--text-mid); margin-bottom: 12px; padding-left: 2px;
-    }
+    .menu-body { padding: 18px 16px 24px; flex: 1; }
+    .sec-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-mid); margin-bottom: 12px; padding-left: 2px; }
 
     .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
     .menu-card {
-      border-radius: var(--r-lg); padding: 20px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      cursor: pointer; border: none; text-align: left;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: var(--shadow); position: relative; overflow: hidden;
+      border-radius: var(--r-lg); padding: 20px 16px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: none; text-align: left; transition: transform 0.15s, box-shadow 0.15s; box-shadow: var(--shadow); position: relative; overflow: hidden;
     }
-    .menu-card::after {
-      content: ''; position: absolute; right: -16px; bottom: -16px;
-      width: 64px; height: 64px; border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-    }
+    .menu-card::after { content: ''; position: absolute; right: -16px; bottom: -16px; width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.12); }
     .menu-card:active { transform: scale(0.97); box-shadow: var(--shadow); }
     .menu-card.wide { grid-column: span 2; flex-direction: row; align-items: center; padding: 18px 20px; }
     .menu-card.wide .card-text { flex: 1; }
@@ -295,18 +234,9 @@
     /* ============================================================
        SCREEN: MATERI — PILIH KATEGORI
        ============================================================ */
-    .screen-body { padding: 16px; }
-
+    .screen-body { padding: 16px; flex: 1; }
     .kat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .kat-card {
-      border-radius: var(--r); padding: 20px 12px;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; gap: 10px; cursor: pointer;
-      border: 2.5px solid transparent;
-      transition: transform 0.15s, border-color 0.2s;
-      box-shadow: var(--shadow); background: var(--white);
-    }
+    .kat-card { border-radius: var(--r); padding: 20px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; cursor: pointer; border: 2.5px solid transparent; transition: transform 0.15s, border-color 0.2s; box-shadow: var(--shadow); background: var(--white); }
     .kat-card:active { transform: scale(0.96); }
     .kat-icon  { font-size: 40px; }
     .kat-nama  { font-size: 13px; font-weight: 800; color: var(--text); }
@@ -317,84 +247,39 @@
     .kc-siapa     { background: #E3F2FD; } .kc-siapa:active     { border-color: var(--biru); }
     .kc-unggah    { background: #FBE9E7; } .kc-unggah:active    { border-color: var(--oranye); }
     .kc-toleransi { background: #F3E5F5; } .kc-toleransi:active { border-color: var(--ungu); }
-
-    .kat-empty {
-      grid-column: span 2; text-align: center;
-      padding: 32px; color: var(--text-mid);
-      font-size: 14px; font-weight: 600;
-    }
+    .kat-empty { grid-column: span 2; text-align: center; padding: 32px; color: var(--text-mid); font-size: 14px; font-weight: 600; }
 
     /* ============================================================
        SCREEN: FLASHCARD
        ============================================================ */
     #s-kartu .screen-body { padding: 14px 16px 24px; display: flex; flex-direction: column; gap: 14px; }
-
-    .kartu-info {
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .kartu-info { display: flex; justify-content: space-between; align-items: center; }
     .kartu-counter { font-size: 13px; font-weight: 800; color: var(--text-mid); }
-    .kartu-badge {
-      font-size: 11px; font-weight: 800; background: var(--hijau-light);
-      color: var(--hijau); padding: 4px 12px; border-radius: 99px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
+    .kartu-badge { font-size: 11px; font-weight: 800; background: var(--hijau-light); color: var(--hijau); padding: 4px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .flashcard {
-      background: var(--white); border-radius: var(--r-lg);
-      border: 2.5px solid var(--hijau-border);
-      overflow: hidden; box-shadow: var(--shadow-lg);
-      cursor: grab; touch-action: pan-y;
-      transition: transform 0.1s;
-    }
+    .flashcard { background: var(--white); border-radius: var(--r-lg); border: 2.5px solid var(--hijau-border); overflow: hidden; box-shadow: var(--shadow-lg); cursor: grab; touch-action: pan-y; transition: transform 0.1s; flex: 1; display: flex; flex-direction: column;}
     .flashcard.swiping { cursor: grabbing; transition: none; }
-
-    .kartu-img-area {
-      background: var(--hijau-light);
-      min-height: 200px; display: flex;
-      align-items: center; justify-content: center; overflow: hidden;
-    }
-    .kartu-img-area img {
-      width: 100%; max-height: 260px; object-fit: contain;
-    }
+    .kartu-img-area { background: var(--hijau-light); min-height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 1; }
+    .kartu-img-area img { width: 100%; max-height: 280px; object-fit: contain; }
     .kartu-no-img { font-size: 60px; opacity: 0.3; }
-
-    .kartu-body { padding: 18px 20px 20px; border-top: 2px solid var(--hijau-light); }
-    .kartu-judul {
-      font-size: 18px; font-weight: 900; color: var(--hijau); margin-bottom: 8px;
-    }
+    .kartu-body { padding: 18px 20px 20px; border-top: 2px solid var(--hijau-light); background: var(--white); }
+    .kartu-judul { font-size: 18px; font-weight: 900; color: var(--hijau); margin-bottom: 8px; }
     .kartu-penjelasan { font-size: 14px; line-height: 1.7; color: var(--text-mid); }
 
-    .kartu-nav { display: flex; align-items: center; gap: 12px; }
-    .btn-nav {
-      width: 44px; height: 44px; border-radius: 50%;
-      border: 2.5px solid var(--hijau-border); background: var(--white);
-      font-size: 20px; color: var(--hijau); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s; flex-shrink: 0;
-    }
+    .kartu-nav { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .btn-nav { width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid var(--hijau-border); background: var(--white); font-size: 20px; color: var(--hijau); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
     .btn-nav:disabled { opacity: 0.28; cursor: not-allowed; }
     .btn-nav:not(:disabled):active { background: var(--hijau-light); }
-
     .dots { display: flex; gap: 6px; align-items: center; justify-content: center; flex: 1; flex-wrap: wrap; }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--hijau-border); transition: all 0.25s; flex-shrink: 0;
-    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hijau-border); transition: all 0.25s; flex-shrink: 0; }
     .dot.active { width: 22px; border-radius: 4px; background: var(--hijau); }
 
     /* ============================================================
        SCREEN: PILIH TANTANGAN (KUIS)
        ============================================================ */
     .tantangan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .t-card {
-      border-radius: var(--r); padding: 18px 12px;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; gap: 8px; cursor: pointer; border: none;
-      transition: transform 0.15s; box-shadow: var(--shadow);
-    }
+    .t-card { border-radius: var(--r); padding: 18px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; border: none; transition: transform 0.15s; box-shadow: var(--shadow); }
     .t-card:active { transform: scale(0.96); }
-    
     .t-icon  { font-size: 34px; }
     .t-label { font-size: 13px; font-weight: 800; line-height: 1.2; }
     .t-hint  { font-size: 11px; font-weight: 600; opacity: 0.7; }
@@ -408,140 +293,64 @@
     /* ============================================================
        SCREEN: ARENA KUIS
        ============================================================ */
-    .kuis-header {
-      background: var(--white); padding: 12px 16px 0;
-      border-bottom: 2px solid var(--hijau-light);
-      position: sticky; top: 0; z-index: 10;
-    }
+    .kuis-header { background: var(--white); padding: 12px 16px 0; border-bottom: 2px solid var(--hijau-light); position: sticky; top: 0; z-index: 10; }
     .kuis-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .kuis-judul-txt { font-size: 14px; font-weight: 800; color: var(--hijau); }
-    .skor-chip {
-      display: flex; align-items: center; gap: 5px;
-      background: var(--hijau-light); padding: 5px 12px; border-radius: 99px;
-    }
+    .skor-chip { display: flex; align-items: center; gap: 5px; background: var(--hijau-light); padding: 5px 12px; border-radius: 99px; }
     .skor-lbl { font-size: 11px; color: var(--text-mid); font-weight: 700; }
     .skor-val { font-size: 16px; font-weight: 900; color: var(--hijau); }
-    .kuis-prog-row {
-      display: flex; align-items: center; gap: 10px; padding-bottom: 12px;
-    }
+    .kuis-prog-row { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; }
     .prog-bg { flex: 1; height: 6px; background: var(--hijau-light); border-radius: 3px; overflow: hidden; }
-    .prog-fill {
-      height: 100%; background: var(--hijau);
-      border-radius: 3px; width: 0%;
-      transition: width 0.4s ease;
-    }
+    .prog-fill { height: 100%; background: var(--hijau); border-radius: 3px; width: 0%; transition: width 0.4s ease; }
     .prog-counter { font-size: 11px; font-weight: 800; color: var(--text-mid); white-space: nowrap; }
 
-    .kuis-body { padding: 14px 16px 24px; }
-
-    /* Kotak soal */
-    .soal-box {
-      background: var(--white); border-radius: var(--r);
-      border: 2.5px solid var(--hijau-border);
-      overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow);
-    }
+    .kuis-body { padding: 14px 16px 24px; flex: 1; }
+    .soal-box { background: var(--white); border-radius: var(--r); border: 2.5px solid var(--hijau-border); overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow); }
     .soal-teks-wrap { padding: 20px; text-align: center; }
     .soal-teks { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.65; }
-
     .soal-gambar-wrap { background: var(--hijau-light); display: flex; flex-direction: column; align-items: center; }
     .soal-gambar { width: 100%; max-height: 230px; object-fit: contain; }
     .soal-hint { padding: 10px 16px; font-size: 14px; font-weight: 700; color: var(--text-mid); text-align: center; }
 
-    /* Opsi jawaban */
     .opsi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    .opsi-btn {
-      border-radius: var(--r); border: 2.5px solid var(--hijau-light);
-      background: var(--white); padding: 10px; cursor: pointer;
-      transition: all 0.15s; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 7px;
-      min-height: 88px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
+    .opsi-btn { border-radius: var(--r); border: 2.5px solid var(--hijau-light); background: var(--white); padding: 10px; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; min-height: 88px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .opsi-btn:active:not(:disabled) { background: var(--hijau-light); transform: scale(0.97); }
     .opsi-btn:disabled { cursor: not-allowed; }
     .opsi-btn.benar { border-color: var(--hijau); background: var(--hijau-light); }
     .opsi-btn.salah { border-color: var(--merah); background: var(--merah-light); }
-
     .opsi-img { width: 100%; height: 76px; object-fit: contain; border-radius: 8px; background: var(--hijau-light); }
     .opsi-lbl-gambar { font-size: 11px; font-weight: 700; color: var(--text-mid); text-align: center; line-height: 1.3; }
     .opsi-lbl-teks { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.45; padding: 4px; }
-
-    /* Skeleton loading opsi gambar */
-    .opsi-skeleton {
-      width: 100%; height: 76px; border-radius: 8px;
-      background: linear-gradient(90deg, var(--hijau-light) 25%, #d4ebd6 50%, var(--hijau-light) 75%);
-      background-size: 200% 100%; animation: shimmer 1.2s infinite;
-    }
+    .opsi-skeleton { width: 100%; height: 76px; border-radius: 8px; background: linear-gradient(90deg, var(--hijau-light) 25%, #d4ebd6 50%, var(--hijau-light) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
     @keyframes shimmer { to { background-position: -200% 0; } }
 
     /* ============================================================
        FEEDBACK OVERLAY
        ============================================================ */
-    #feedback {
-      position: fixed; inset: 0; z-index: 200;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.15s;
-    }
+    #feedback { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
     #feedback.show { opacity: 1; pointer-events: all; }
     #feedback.benar { background: rgba(27, 94, 32, 0.9); }
     #feedback.salah { background: rgba(183, 28, 28, 0.9); }
     .fb-icon { font-size: 110px; }
     #feedback.show.benar .fb-icon { animation: bounceIn 0.45s ease-out; }
     #feedback.show.salah .fb-icon { animation: shakeIt 0.45s ease-out; }
-
-    @keyframes bounceIn {
-      0%   { transform: scale(0.2); opacity: 0; }
-      55%  { transform: scale(1.2); }
-      80%  { transform: scale(0.92); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes shakeIt {
-      0%, 100% { transform: translateX(0); }
-      15%, 45%, 75% { transform: translateX(-16px); }
-      30%, 60%, 90% { transform: translateX(16px); }
-    }
+    @keyframes bounceIn { 0% { transform: scale(0.2); opacity: 0; } 55% { transform: scale(1.2); } 80% { transform: scale(0.92); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes shakeIt { 0%, 100% { transform: translateX(0); } 15%, 45%, 75% { transform: translateX(-16px); } 30%, 60%, 90% { transform: translateX(16px); } }
 
     /* ============================================================
        SCREEN: HASIL AKHIR
        ============================================================ */
     #s-hasil { background: var(--hijau); }
-
-    .hasil-hero {
-      padding: 44px 24px 36px; text-align: center;
-      background:
-        repeating-linear-gradient(45deg,
-          transparent, transparent 18px,
-          rgba(255,255,255,0.03) 18px,
-          rgba(255,255,255,0.03) 19px),
-        var(--hijau);
-    }
+    .hasil-hero { padding: 44px 24px 36px; text-align: center; background: repeating-linear-gradient(45deg, transparent, transparent 18px, rgba(255,255,255,0.03) 18px, rgba(255,255,255,0.03) 19px), var(--hijau); }
     .hasil-trofi  { font-size: 68px; margin-bottom: 10px; }
     .hasil-nama-txt { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
     .hasil-skor-num { color: var(--kuning); font-size: 76px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
     .hasil-skor-lbl { color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 600; margin-top: 4px; }
     .hasil-bintang  { font-size: 38px; margin-top: 14px; letter-spacing: 4px; }
-
-    .hasil-card {
-      background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0;
-      padding: 28px 22px 48px; margin-top: -1px;
-      min-height: 100%;
-    }
-    .hasil-kat {
-      font-size: 11px; text-align: center; color: var(--text-mid);
-      font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
-    }
-    .hasil-pesan {
-      font-size: 15px; font-weight: 700; color: var(--text); text-align: center;
-      line-height: 1.65; padding: 14px 16px; background: var(--hijau-light);
-      border-radius: var(--r); border-left: 4px solid var(--hijau); margin-bottom: 22px;
-    }
+    .hasil-card { background: var(--white); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: 28px 22px 48px; margin-top: -1px; flex: 1; /* <-- Eliminates scroll */ }
+    .hasil-kat { font-size: 11px; text-align: center; color: var(--text-mid); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .hasil-pesan { font-size: 15px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.65; padding: 14px 16px; background: var(--hijau-light); border-radius: var(--r); border-left: 4px solid var(--hijau); margin-bottom: 22px; }
     .hasil-actions { display: flex; flex-direction: column; gap: 10px; }
-    .btn-keluar {
-      background: var(--merah-light); color: var(--merah); border: 2.5px solid #EF9A9A; margin-top: 24px;
-    }
-.btn-keluar:active:not(:disabled) {
-  background: #FFCDD2;
-    }
   </style>
 </head>
 
@@ -605,13 +414,16 @@
 
   <div id="s-menu" class="screen">
     <div class="menu-header">
+      <button class="btn-logout-top" onclick="keluarKeLogin()">
+        🔄 Ganti
+      </button>
       <div class="menu-sapa">Selamat datang,</div>
       <div class="menu-nama">Hai, <span id="disp-nama">Siswa</span>! 👋</div>
       <div class="menu-tagline">SDN 1 Godegan Bisa! ⚜️</div>
     </div>
+    
     <div class="menu-body">
       <div class="sec-title">Mau ngapain dulu?</div>
-      
       <div class="menu-grid">
         <button class="menu-card mc-materi" onclick="showScreen('s-materi')">
           <div class="card-icon">📖</div>
@@ -638,14 +450,9 @@
           <div class="card-arrow">→</div>
         </button>
       </div>
-
-      <button class="btn-solid btn-keluar" onclick="keluarKeLogin()">
-        🔄 Ganti Nama Pemain
-      </button>
-
     </div>
   </div>
-  
+
   <div id="s-materi" class="screen">
     <div class="top-bar">
       <button class="btn-back" onclick="showScreen('s-menu')">←</button>
@@ -737,10 +544,8 @@
     </div>
 
     <div class="kuis-body">
-      <div class="soal-box" id="soal-box">
-        </div>
-      <div class="opsi-grid" id="opsi-grid">
-        </div>
+      <div class="soal-box" id="soal-box"></div>
+      <div class="opsi-grid" id="opsi-grid"></div>
     </div>
   </div>
 
@@ -762,7 +567,9 @@
     </div>
   </div>
 
-</div><div id="feedback">
+</div>
+
+<div id="feedback">
   <div class="fb-icon" id="fb-icon">✅</div>
 </div>
 
@@ -778,25 +585,20 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbySmZzWWRBI_izz0rtiWxi1
    2. STATE APLIKASI
    ============================================================ */
 const APP = {
-  // Identitas
   peserta       : '',
-  // Data dari GAS
-  rawData       : null,   // { Gambar, Materi, Soal, Pengaturan }
-  kamus         : {},     // { ID_Gambar: { ID_Drive, Kategori, Keterangan } }
+  rawData       : null,
+  kamus         : {},
   config        : { poin: 10, campuran: 15 },
-  // State Materi / Flashcard
   kartuList     : [],
   kartuIdx      : 0,
   kartuKategori : '',
   touchStartX   : 0,
   touchStartY   : 0,
-  // State Kuis
   kategori      : '',
   soalList      : [],
   soalIdx       : 0,
   skor          : 0,
-  jawabanId     : '',  // ID_Gambar jawaban benar soal aktif
-  // Progress Animasi
+  jawabanId     : '',
   loadInt       : null,
   loadPct       : 0
 };
@@ -835,27 +637,21 @@ function finishLoadingAnim(callback) {
   document.getElementById('loading-fill').style.width = '100%';
   document.getElementById('loading-pct').textContent = '100%';
   document.getElementById('loading-sub').textContent = 'Selesai! Ayo mulai!';
-  
-  setTimeout(() => {
-    callback();
-  }, 650);
+  setTimeout(() => { callback(); }, 650);
 }
 
 /* ============================================================
-   4. INISIALISASI — Fetch data saat halaman dimuat
+   4. INISIALISASI
    ============================================================ */
 window.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   startLoadingAnim();
-
-  // Jika URL belum dikonfigurasi
   if (!GAS_URL || GAS_URL.includes('GANTI')) {
     console.warn('GAS_URL belum dikonfigurasi. Lanjut ke login.');
     finishLoadingAnim(() => showScreen('s-login'));
     return;
   }
-  
   try {
     const json = await fetchData();
     finishLoadingAnim(() => prosesDariGAS(json));
@@ -871,11 +667,9 @@ async function fetchData() {
   return res.json();
 }
 
-/** Memproses respons JSON dari GAS */
 function prosesDariGAS(json) {
   if (!json) { showScreen('s-login'); return; }
   if (json.status === 'closed') { showScreen('s-tutup'); return; }
-
   if (json.status === 'success' && json.data) {
     APP.rawData = json.data;
     APP.kamus   = buildKamus(json.data.Gambar);
@@ -893,10 +687,7 @@ async function handleLogin() {
   const nama  = document.getElementById('sel-nama').value;
   const errEl = document.getElementById('login-error');
 
-  if (!nama) {
-    errEl.classList.add('show');
-    return;
-  }
+  if (!nama) { errEl.classList.add('show'); return; }
   errEl.classList.remove('show');
   APP.peserta = nama;
 
@@ -924,21 +715,19 @@ async function handleLogin() {
 }
 
 function lanjutKeMenu() {
-  if (!checkAccess(APP.rawData.Pengaturan)) {
-    showScreen('s-tutup');
-    return;
-  }
+  if (!checkAccess(APP.rawData.Pengaturan)) { showScreen('s-tutup'); return; }
   document.getElementById('disp-nama').textContent = APP.peserta;
   updateHintSoal();
   renderKatGrid();
   showScreen('s-menu');
 }
-  
+
 function keluarKeLogin() {
   APP.peserta = '';
   document.getElementById('sel-nama').value = '';
   showScreen('s-login');
 }
+
 /* ============================================================
    6. MATERI — PILIH KATEGORI & FLASHCARD
    ============================================================ */
@@ -953,7 +742,6 @@ const KATEGORI_MATERI = [
 function renderKatGrid() {
   const grid = document.getElementById('kat-grid');
   if (!APP.rawData) { grid.innerHTML = '<div class="kat-empty">Data materi belum tersedia.</div>'; return; }
-
   grid.innerHTML = '';
   let adaKonten = false;
 
@@ -980,9 +768,7 @@ function renderKatGrid() {
 
 function bukaMateri(kategori, icon) {
   const list = (APP.rawData.Materi || []).filter(m => m.Kategori === kategori);
-  if (list.length === 0) {
-    alert('Materi kategori ini belum tersedia.'); return;
-  }
+  if (list.length === 0) { alert('Materi kategori ini belum tersedia.'); return; }
 
   APP.kartuList     = list;
   APP.kartuIdx      = 0;
@@ -1009,11 +795,7 @@ function renderKartu() {
 
   const imgArea = document.getElementById('kartu-img-area');
   if (gambarObj && gambarObj.ID_Drive) {
-    imgArea.innerHTML = `
-      <img src="${getThumbnailURL(gambarObj.ID_Drive, 'w500')}"
-           alt="${kartu.Judul}"
-           onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">
-    `;
+    imgArea.innerHTML = `<img src="${getThumbnailURL(gambarObj.ID_Drive, 'w500')}" alt="${kartu.Judul}" onerror="this.parentElement.innerHTML='<div class=kartu-no-img>🖼️</div>'">`;
   } else {
     imgArea.innerHTML = `<div class="kartu-no-img">📄</div>`;
   }
@@ -1063,7 +845,6 @@ function inisialisasiSwipe() {
 function updateHintSoal() {
   if (!APP.rawData) return;
   const soalAll = APP.rawData.Soal || [];
-
   const map = {
     'Pahlawan'       : 'hint-pahlawan',
     'Sumbu Filosofi' : 'hint-sumbu',
@@ -1089,10 +870,7 @@ function updateHintSoal() {
    ============================================================ */
 function mulaiKuis(kategori) {
   if (!APP.rawData) { alert('Data belum tersedia.'); return; }
-
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen().catch(() => {});
-  }
+  if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(() => {}); }
 
   APP.kategori = kategori;
   APP.skor     = 0;
@@ -1102,18 +880,12 @@ function mulaiKuis(kategori) {
   if (kategori === 'Uji Semua') {
     pool = fisherYates([...(APP.rawData.Soal || [])]).slice(0, APP.config.campuran);
   } else {
-    pool = fisherYates(
-      (APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori)
-    );
+    pool = fisherYates((APP.rawData.Soal || []).filter(s => s.Kategori_Uji === kategori));
   }
 
-  if (pool.length === 0) {
-    alert(`Soal kategori "${kategori}" belum tersedia. Hubungi pembina.`);
-    return;
-  }
+  if (pool.length === 0) { alert(`Soal kategori "${kategori}" belum tersedia. Hubungi pembina.`); return; }
 
   APP.soalList = pool;
-
   document.getElementById('kuis-judul').textContent = kategori === 'Uji Semua' ? '🏆 Uji Semua Materi' : kategori;
   document.getElementById('kuis-skor').textContent  = '0';
 
@@ -1129,7 +901,6 @@ function renderSoal() {
   document.getElementById('prog-counter').textContent = `${APP.soalIdx + 1}/${total}`;
 
   renderKontenSoal(soal);
-
   const opsiArr = buatOpsi(soal);
   APP.jawabanId = soal.Jawaban_Benar;
   renderOpsi(opsiArr, soal.Tipe_Opsi);
@@ -1137,50 +908,36 @@ function renderSoal() {
 
 function renderKontenSoal(soal) {
   const box = document.getElementById('soal-box');
-
   if (soal.Tipe_Input === 'Gambar') {
     const gbj = APP.kamus[soal.ID_Gambar_Soal];
     const url = gbj ? getThumbnailURL(gbj.ID_Drive, 'w600') : '';
     box.innerHTML = `
       <div class="soal-gambar-wrap">
-        ${url
-          ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">`
-          : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'
-        }
+        ${url ? `<img class="soal-gambar" src="${url}" alt="Gambar soal" onerror="this.style.display='none'">` : '<div style="padding:30px;text-align:center;font-size:40px;opacity:.4">🖼️</div>'}
         <div class="soal-hint">Siapakah tokoh / tempat ini?</div>
       </div>
     `;
   } else {
-    box.innerHTML = `
-      <div class="soal-teks-wrap">
-        <div class="soal-teks">${soal.Konten_Soal || '—'}</div>
-      </div>
-    `;
+    box.innerHTML = `<div class="soal-teks-wrap"><div class="soal-teks">${soal.Konten_Soal || '—'}</div></div>`;
   }
 }
 
 function renderOpsi(opsiArr, tipeOpsi) {
   const grid = document.getElementById('opsi-grid');
   grid.innerHTML = '';
-
   opsiArr.forEach(item => {
     const btn = document.createElement('button');
     btn.className = 'opsi-btn';
-
     if (tipeOpsi === 'Gambar') {
       const url = item.ID_Drive ? getThumbnailURL(item.ID_Drive, 'w300') : '';
       btn.innerHTML = `
         <div class="opsi-skeleton" id="sk-${item.ID_Gambar}"></div>
-        <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}"
-             src="${url}" alt="${item.Keterangan}"
-             onload="onOpsiImgLoad('${item.ID_Gambar}')"
-             onerror="onOpsiImgError('${item.ID_Gambar}','${escapeHtml(item.Keterangan)}')">
+        <img class="opsi-img" style="display:none" id="img-${item.ID_Gambar}" src="${url}" alt="${item.Keterangan}" onload="onOpsiImgLoad('${item.ID_Gambar}')" onerror="onOpsiImgError('${item.ID_Gambar}','${escapeHtml(item.Keterangan)}')">
         <span class="opsi-lbl-gambar">${item.Keterangan}</span>
       `;
     } else {
       btn.innerHTML = `<span class="opsi-lbl-teks">${item.Keterangan}</span>`;
     }
-
     btn.onclick = () => cekJawaban(item.ID_Gambar);
     grid.appendChild(btn);
   });
@@ -1196,23 +953,15 @@ function onOpsiImgLoad(id) {
 function onOpsiImgError(id, keterangan) {
   const sk  = document.getElementById('sk-' + id);
   if (sk) {
-    sk.style.animation  = 'none';
-    sk.style.background = 'var(--hijau-light)';
-    sk.textContent      = keterangan;
-    sk.style.display    = 'flex';
-    sk.style.alignItems = 'center';
-    sk.style.justifyContent = 'center';
-    sk.style.fontSize   = '12px';
-    sk.style.fontWeight = '700';
-    sk.style.color      = 'var(--text-mid)';
-    sk.style.padding    = '4px';
-    sk.style.textAlign  = 'center';
+    sk.style.animation  = 'none'; sk.style.background = 'var(--hijau-light)'; sk.textContent = keterangan;
+    sk.style.display = 'flex'; sk.style.alignItems = 'center'; sk.style.justifyContent = 'center';
+    sk.style.fontSize = '12px'; sk.style.fontWeight = '700'; sk.style.color = 'var(--text-mid)';
+    sk.style.padding = '4px'; sk.style.textAlign = 'center';
   }
 }
 
 function cekJawaban(pilihanId) {
   document.querySelectorAll('.opsi-btn').forEach(b => b.disabled = true);
-
   const benar = (pilihanId === APP.jawabanId);
 
   if (benar) {
@@ -1223,15 +972,10 @@ function cekJawaban(pilihanId) {
   }
 
   tampilFeedback(benar ? 'benar' : 'salah');
-
   setTimeout(() => {
     sembunyikanFeedback();
     APP.soalIdx++;
-    if (APP.soalIdx < APP.soalList.length) {
-      renderSoal();
-    } else {
-      selesaiKuis();
-    }
+    if (APP.soalIdx < APP.soalList.length) { renderSoal(); } else { selesaiKuis(); }
   }, 1200);
 }
 
@@ -1244,45 +988,27 @@ function tampilFeedback(tipe) {
   el.className = `show ${tipe}`;
 }
 
-function sembunyikanFeedback() {
-  document.getElementById('feedback').className = '';
-}
-
-function keluarKuis() {
-  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-  sembunyikanFeedback();
-  showScreen('s-pilih');
-}
+function sembunyikanFeedback() { document.getElementById('feedback').className = ''; }
+function keluarKuis() { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); sembunyikanFeedback(); showScreen('s-pilih'); }
 
 /* ============================================================
-   9. AUTO-DISTRACTOR — Buat 4 opsi dari pool kategori
+   9. AUTO-DISTRACTOR
    ============================================================ */
 function buatOpsi(soal) {
   const jawabanId = soal.Jawaban_Benar;
   const kategori  = soal.Kategori_Uji;
   const allGambar = APP.rawData.Gambar || [];
 
-  let pool = allGambar.filter(g =>
-    g.Kategori === kategori && g.ID_Gambar !== jawabanId
-  );
-
+  let pool = allGambar.filter(g => g.Kategori === kategori && g.ID_Gambar !== jawabanId);
   if (pool.length < 3) {
-    const fallback = fisherYates(
-      allGambar.filter(g =>
-        g.Kategori !== kategori && g.ID_Gambar !== jawabanId
-      )
-    );
+    const fallback = fisherYates(allGambar.filter(g => g.Kategori !== kategori && g.ID_Gambar !== jawabanId));
     pool = [...pool, ...fallback];
   }
 
   const pengecoh = fisherYates(pool).slice(0, 3);
   const jawabanObj = allGambar.find(g => g.ID_Gambar === jawabanId);
 
-  if (!jawabanObj) {
-    console.warn('[Auto-Distractor] Jawaban benar tidak ditemukan:', jawabanId);
-    return fisherYates(pengecoh);
-  }
-
+  if (!jawabanObj) { return fisherYates(pengecoh); }
   return fisherYates([jawabanObj, ...pengecoh]);
 }
 
@@ -1305,20 +1031,16 @@ function selesaiKuis() {
 
   document.getElementById('hasil-nama').textContent  = APP.peserta;
   document.getElementById('hasil-skor').textContent  = APP.skor;
-  document.getElementById('hasil-kat').textContent   = APP.kategori === 'Uji Semua'
-    ? '🏆 Uji Semua Materi' : '📌 ' + APP.kategori;
+  document.getElementById('hasil-kat').textContent   = APP.kategori === 'Uji Semua' ? '🏆 Uji Semua Materi' : '📌 ' + APP.kategori;
   document.getElementById('hasil-bintang').textContent = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
   document.getElementById('hasil-pesan').textContent = PESAN[bintang];
 
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-
   showScreen('s-hasil');
   kirimSkor();
 }
 
-function ulangiKuis() {
-  mulaiKuis(APP.kategori);
-}
+function ulangiKuis() { mulaiKuis(APP.kategori); }
 
 function kirimSkor() {
   if (!GAS_URL || GAS_URL.includes('GANTI')) return;
@@ -1326,12 +1048,7 @@ function kirimSkor() {
     method  : 'POST',
     mode    : 'no-cors',
     headers : { 'Content-Type': 'application/json' },
-    body    : JSON.stringify({
-      action      : 'submitScore',
-      namaPeserta : APP.peserta,
-      kategori    : APP.kategori,
-      skor        : APP.skor
-    })
+    body    : JSON.stringify({ action: 'submitScore', namaPeserta: APP.peserta, kategori: APP.kategori, skor: APP.skor })
   }).catch(err => console.warn('[kirimSkor] Gagal:', err.message));
 }
 
@@ -1374,12 +1091,7 @@ function checkAccess(pengaturanArr) {
 }
 
 function escapeHtml(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
 </body>
