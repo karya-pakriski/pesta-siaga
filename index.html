@@ -371,7 +371,7 @@
   </style>
 </head>
 
-<body oncontextmenu="return false">
+<body>
 <div id="app">
 
   <div id="s-loading" class="screen active">
@@ -908,8 +908,6 @@ function updateHintSoal() {
    ============================================================ */
 function mulaiKuis(kategori) {
   if (!APP.rawData) { showModal('Data soal belum terhubung dari server.'); return; }
-  if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(() => {}); }
-
   APP.kategori = kategori;
   APP.skor     = 0;
   APP.soalIdx  = 0;
@@ -1030,7 +1028,7 @@ function tampilFeedback(tipe) {
 }
 
 function sembunyikanFeedback() { document.getElementById('feedback').className = ''; }
-function keluarKuis() { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); sembunyikanFeedback(); showScreen('s-pilih'); }
+function keluarKuis() { sembunyikanFeedback(); showScreen('s-pilih'); }
 
 /* ============================================================
    9. AUTO-DISTRACTOR
@@ -1076,7 +1074,6 @@ function selesaiKuis() {
   document.getElementById('hasil-bintang').textContent = '⭐'.repeat(bintang) + '☆'.repeat(3 - bintang);
   document.getElementById('hasil-pesan').textContent = PESAN[bintang];
 
-  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   showScreen('s-hasil');
   kirimSkor();
 }
