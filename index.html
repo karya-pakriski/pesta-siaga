@@ -1040,14 +1040,17 @@ function buatOpsi(soal) {
     jawabanObj = { ID_Gambar: soal.Jawaban_Benar, Keterangan: soal.Jawaban_Benar, Nama_File: '', Kategori: soal.Kategori_Uji };
   }
 
-  // 2. Pool pengecoh (Normalisasi kategori agar tidak meleset)
+  // Simpan teks jawaban benar untuk menyaring kembarannya
+  const teksKunci = String(jawabanObj.Keterangan).trim().toLowerCase();
+
+  // 2. Pool pengecoh: Kategori harus sama, ID beda, DAN TEKS JUGA HARUS BEDA
   let pool = allGambar.filter(g =>
     String(g.Kategori).trim().toLowerCase() === kategori &&
-    String(g.ID_Gambar).trim().toLowerCase() !== jawabanRef &&
-    String(g.Keterangan).trim().toLowerCase() !== jawabanRef
+    String(g.ID_Gambar).trim().toLowerCase() !== jawabanRef && 
+    String(g.Keterangan).trim().toLowerCase() !== teksKunci
   );
 
-  // 3. SAFE FALLBACK: Jika kurang dari 3, ambil dari kategori yang RELEVAN saja
+  // 3. Fallback jika kategori tersebut sepi (kurang dari 3 soal)
   if (pool.length < 3) {
     let kategoriRelevan = [];
     if (kategori.includes('tokoh') || kategori.includes('pahlawan')) {
@@ -1059,13 +1062,20 @@ function buatOpsi(soal) {
     const tambahan = allGambar.filter(g =>
       kategoriRelevan.includes(String(g.Kategori).trim().toLowerCase()) &&
       String(g.ID_Gambar).trim().toLowerCase() !== jawabanRef &&
-      String(g.Keterangan).trim().toLowerCase() !== jawabanRef
+      String(g.Keterangan).trim().toLowerCase() !== teksKunci
     );
     
-    // Gabungkan dan hapus duplikat jika ada
-    pool = [...new Set([...pool, ...tambahan])];
+    // Gabungkan dan pastikan semua pilihan unik berdasarkan "Keterangan"
+    const gabung = [...pool, ...tambahan];
+    const mapUnik = new Map();
+    gabung.forEach(item => {
+      const key = String(item.Keterangan).trim().toLowerCase();
+      if (!mapUnik.has(key)) mapUnik.set(key, item);
+    });
+    pool = Array.from(mapUnik.values());
   }
 
+  // Ambil 3 pengecoh acak, gabungkan dengan kunci, lalu kocok posisinya
   const pengecoh = fisherYates(pool).slice(0, 3);
   return fisherYates([jawabanObj, ...pengecoh]);
 }
